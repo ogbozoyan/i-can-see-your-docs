@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/core/deskew/deskew.iml" filepath="$PROJECT_DIR$/core/deskew/deskew.iml" />
-      <module fileurl="file://$PROJECT_DIR$/ocr-uni-project.iml" filepath="$PROJECT_DIR$/ocr-uni-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/deskew/deskew.iml" filepath="$PROJECT_DIR$/deskew/deskew.iml" />
+      <module fileurl="file://$PROJECT_DIR$/deskew/ocr-uni-project.iml" filepath="$PROJECT_DIR$/deskew/ocr-uni-project.iml" />
     </modules>
   </component>
 </project>

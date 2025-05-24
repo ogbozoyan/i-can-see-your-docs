@@ -4,6 +4,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -22,6 +24,8 @@ import java.util.UUID;
 @Setter
 @ToString
 @RequiredArgsConstructor
+@Builder
+@AllArgsConstructor
 public class DocumentEntity {
     @Id
     @Column(name = "uuid", nullable = false)
@@ -112,7 +116,6 @@ public class DocumentEntity {
     private Boolean isFullyProcessed;
 
     public void setFullyProcessed(Boolean fullyProcessed) {
-
         isFullyProcessed = fullyProcessed;
     }
 
@@ -130,12 +133,16 @@ public class DocumentEntity {
             return false;
         }
         DocumentEntity document = (DocumentEntity) o;
-        return getId() != null && Objects.equals(getId(), document.getId());
+        return this.getId() != null && Objects.equals(this.getId(), document.getId());
     }
 
     @Override
     public final int hashCode() {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
+    }
+
+    public UUID getId() {/**/
+        return id;
     }
 
     record TableBig(

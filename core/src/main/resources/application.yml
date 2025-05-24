@@ -1,3 +1,8 @@
+--- #app config
+app:
+  descew:
+    api-url: ${APP_DESCEW_API_URL:http://127.0.0.1:1338}
+
 --- #spring server
 spring:
   messages:
@@ -32,8 +37,8 @@ spring:
     openai:
       chat:
         options:
-          model: ${CHAT_MODEL:gpt-4o-mini-2024-07-18}
-          temperature: ${CHAT_TEMPERATURE:0.5}
+          model: o4-mini
+          temperature: 1 # only available temperature for o4-mini
       api-key: ${OPENAI_API_KEY}
 
 --- #spring datasource
