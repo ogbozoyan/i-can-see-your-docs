@@ -116,16 +116,16 @@ def crop_regions(img, regions):
     return crops
 
 
-# Пример использования:
+def parser(file_path: str):
+    img = deskew_hough(file_path)
 
-img = deskew_hough('img/1.jpg')
-
-regions = {
-        "table_1":   dict(top=TOP_MARGIN + 535, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 1950),
+    regions = {
+        "table_1": dict(top=TOP_MARGIN + 535, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 1950),
         "table_1_2": dict(top=TOP_MARGIN + 835, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 1770),
         "table_2_1": dict(top=TOP_MARGIN + 1125, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 1495),
         "table_2_2": dict(top=TOP_MARGIN + 1275, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 1310),
-        "table_3_1": dict(top=TOP_MARGIN + 1470, left=LEFT_MARGIN + 50, right=RIGHT_MARGIN+265, bottom=BOTTOM_MARGIN + 1155),
+        "table_3_1": dict(top=TOP_MARGIN + 1470, left=LEFT_MARGIN + 50, right=RIGHT_MARGIN + 265,
+                          bottom=BOTTOM_MARGIN + 1155),
         "table_3_2": dict(top=TOP_MARGIN + 1632, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 980),
         "table_4_1": dict(top=TOP_MARGIN + 1831, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 805),
         "table_4_2": dict(top=TOP_MARGIN + 1987, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 630),
@@ -134,5 +134,6 @@ regions = {
         "last_number": dict(top=TOP_MARGIN + 2555, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 20),
     }
 
-crops = crop_regions(img, regions)
-print(crops)
+    crops = crop_regions(img, regions)
+    print(crops)
+    return crops
