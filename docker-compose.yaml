@@ -20,7 +20,7 @@ services:
       - "9000:9000" # file upload&preview port
       - "9001:9001" # console access port
   database:
-    image: 'pgvector/pgvector:pg16'
+    image: 'pgvector/pgvector:pg17'
     container_name: pgvector-ocr-uni
     restart: always
     environment:
