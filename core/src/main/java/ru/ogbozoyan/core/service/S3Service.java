@@ -2,9 +2,11 @@ package ru.ogbozoyan.core.service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.ogbozoyan.core.configuration.s3.S3Properties;
+import ru.ogbozoyan.core.web.dto.S3CustomResponse;
 import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -54,6 +56,25 @@ public class S3Service {
 
         return new S3CustomResponse(uuid.toString(), originalFilename, key);
     }
+
+    @SneakyThrows
+    public S3CustomResponse uploadFile(UUID uuid, ByteArrayResource baos, String originalFilename) {
+
+        String key = uuid + "/" + originalFilename;
+
+        ensureBucket();
+
+        PutObjectRequest putRequest = PutObjectRequest.builder()
+            .bucket(properties.getS3Bucket())
+            .key(key)
+//            .contentType()
+            .build();
+
+        s3Client.putObject(putRequest, RequestBody.fromBytes(baos.getContentAsByteArray()));
+
+        return new S3CustomResponse(uuid.toString(), originalFilename, key);
+    }
+
 
     @SneakyThrows
     public byte[] downloadFile(UUID uuid, String filename) {

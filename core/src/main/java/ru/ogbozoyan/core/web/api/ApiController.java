@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Flux;
 import ru.ogbozoyan.core.dao.entity.DocumentEntity;
 import ru.ogbozoyan.core.service.AiService;
 import ru.ogbozoyan.core.service.DesckewService;
-import ru.ogbozoyan.core.service.S3CustomResponse;
+import ru.ogbozoyan.core.service.DocumentService;
+import ru.ogbozoyan.core.web.dto.S3CustomResponse;
 import ru.ogbozoyan.core.service.S3Service;
 
 import java.util.UUID;
@@ -41,12 +43,16 @@ public class ApiController {
     @Autowired
     private S3Service s3Service;
 
+    @Autowired
+    private DocumentService documentService;
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation
     public ResponseEntity<DocumentEntity.TableBig> test() {
-        return ResponseEntity.ok(aiService.processDocumentToAi());
+        return ResponseEntity.ok(aiService.processDocumentToAi(null));
     }
+
 
     @PostMapping(value = "/descew",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE
@@ -55,6 +61,15 @@ public class ApiController {
     @Operation
     public ResponseEntity<String> testDesckew(@RequestParam("file") MultipartFile multipartFile) {
         return ResponseEntity.ok(desckewService.uploadAndGetFiles(multipartFile.getResource()).toString());
+    }
+
+    @PostMapping(value = "/document",
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    @ResponseStatus(HttpStatus.OK)
+    @Operation
+    public ResponseEntity<Flux<?>> testDocument(@RequestParam("file") MultipartFile multipartFile) {
+        return ResponseEntity.ok(documentService.uploadDocumentAndProcess(multipartFile));
     }
 
     @PostMapping(value = "/upload",

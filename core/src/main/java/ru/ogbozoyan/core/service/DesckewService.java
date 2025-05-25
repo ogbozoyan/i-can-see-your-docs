@@ -14,11 +14,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+import ru.ogbozoyan.core.configuration.exception.DescewException;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -34,7 +34,7 @@ public class DesckewService {
 
 
     @SneakyThrows
-    public Map<String, ByteArrayResource> uploadAndGetFiles(Resource fileResource) {
+    public ConcurrentHashMap<String, ByteArrayResource> uploadAndGetFiles(Resource fileResource) {
 
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
         body.add("file", fileResource);
@@ -53,14 +53,14 @@ public class DesckewService {
         if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
             return extractZipToMap(response.getBody());
         } else {
-            throw new RuntimeException("Upload failed: " + response.getStatusCode());
+            throw new DescewException("Upload failed: " + response.getStatusCode());
         }
 
     }
 
     @SneakyThrows
-    private Map<String, ByteArrayResource> extractZipToMap(byte[] zipBytes) {
-        Map<String, ByteArrayResource> fileMap = new HashMap<>();
+    private ConcurrentHashMap<String, ByteArrayResource> extractZipToMap(byte[] zipBytes) {
+        ConcurrentHashMap<String, ByteArrayResource> fileMap = new ConcurrentHashMap<>();
 
         try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zipBytes))) {
             ZipEntry entry;
@@ -85,6 +85,9 @@ public class DesckewService {
                     fileMap.put(entry.getName(), resource);
                 }
             }
+        } catch (Exception e) {
+            log.error("Failed to extract zip", e);
+            throw new DescewException("Failed to extract zip file", e);
         }
 
         log.info("Found {} files; {}", fileMap.size(), fileMap);

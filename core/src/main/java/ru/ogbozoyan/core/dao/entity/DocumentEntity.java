@@ -2,6 +2,8 @@ package ru.ogbozoyan.core.dao.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.SqlTypes;
 
@@ -30,6 +33,8 @@ public class DocumentEntity {
     /**/
     @Id
     @Column(name = "uuid", nullable = false)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @UuidGenerator
     private UUID id;
 
     @Column(name = "original_url", length = Integer.MAX_VALUE)
@@ -112,9 +117,9 @@ public class DocumentEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     private TableSmall employeeNumberResult;
 
-    @Column(name = "is_fully_processed", nullable = false)
+    @Column(name = "is_fully_processed")
     @ColumnDefault("false")
-    private Boolean isFullyProcessed;
+    private Boolean isFullyProcessed = Boolean.FALSE;
 
     @Override
     public final boolean equals(Object o) {
