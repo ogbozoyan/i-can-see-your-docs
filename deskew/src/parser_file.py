@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import pytesseract
+import io
 
 TOP_MARGIN = 235
 LEFT_MARGIN = 350
@@ -60,13 +61,16 @@ def detect_skew_angle(image):
     return 0
 
 
-def deskew_hough(image_path, keyword="СОЦИОМЕТРИЧЕСКАЯ"):
+def deskew_hough(image_bytes: bytes, keyword="СОЦИОМЕТРИЧЕСКАЯ"):
     """
     Автоматически выравнивает изображение по тексту, если завалено.
+    Принимает байты изображения.
     """
-    image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+    nparr = np.frombuffer(image_bytes, np.uint8)
+    image = cv2.imdecode(nparr, cv2.IMREAD_GRAYSCALE)
+
     if image is None:
-        raise ValueError("Файл изображения не найден или не читается")
+        raise ValueError("Не удалось декодировать изображение из байтов")
 
     angle = detect_skew_angle(image)
     if abs(angle) > 0.2:  # Корректируем только если завалено заметно (например, >0.5°)
@@ -92,9 +96,6 @@ def deskew_hough(image_path, keyword="СОЦИОМЕТРИЧЕСКАЯ"):
         # Обрезаем края
         rotated_img = crop_borders(rotated_img, **dict(top=TOP_MARGIN, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN))
 
-    # if output_path:
-    #     cv2.imwrite(output_path, rotated_img)
-
     return rotated_img
 
 
@@ -116,8 +117,11 @@ def crop_regions(img, regions):
     return crops
 
 
-def parser(file_path: str):
-    img = deskew_hough(file_path)
+def parser(image_bytes: bytes):
+    """
+    Принимает байты изображения для обработки.
+    """
+    img = deskew_hough(image_bytes) # Pass bytes directly
 
     regions = {
         "table_1": dict(top=TOP_MARGIN + 535, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 1950),
@@ -134,6 +138,4 @@ def parser(file_path: str):
         "last_number": dict(top=TOP_MARGIN + 2555, left=LEFT_MARGIN, right=RIGHT_MARGIN, bottom=BOTTOM_MARGIN + 20),
     }
 
-    crops = crop_regions(img, regions)
-    print(crops)
-    return crops
+    return crop_regions(img, regions)
