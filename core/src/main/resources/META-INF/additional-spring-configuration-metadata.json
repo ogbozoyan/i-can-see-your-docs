@@ -4,5 +4,10 @@
       "name": "app.descew.api-url",
       "type": "java.lang.String",
       "description": "Base url of descew service"
-  }
-] }
+    },
+    {
+      "name": "app.descew.file-names",
+      "type": "java.util.ArrayList",
+      "description": "File names from descew zip"
+    }
+  ] }

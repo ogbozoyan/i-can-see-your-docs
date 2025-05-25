@@ -2,6 +2,18 @@
 app:
   descew:
     api-url: ${APP_DESCEW_API_URL:http://127.0.0.1:1338}
+    file-names: >
+        table_1.png
+        table_1_2.png
+        table_2_1.png
+        table_2_2.png
+        table_3_1.png
+        table_3_2.png
+        table_4_1.png
+        table_4_2.png
+        table_5_1.png
+        table_5_2.png
+        last_number.png
 
 --- #spring server
 spring:
@@ -50,6 +62,14 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+--- #s3
+aws:
+  access-key: ${AWS_ACCESS_KEY:minioadmin}
+  secret-key: ${AWS_SECRET_KEY:minioadmin}
+  region: ${AWS_REGION:eu-central-1} #Any (MinIO doesn't care, but required by SDK)
+  s3-bucket: ${AWS_S3_BUCKET:ocr}
+  s3-endpoint: ${AWS_S3_ENDPOINT:http://localhost:9000}
 
 --- #swagger
 springdoc:

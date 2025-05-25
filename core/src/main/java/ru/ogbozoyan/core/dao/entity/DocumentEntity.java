@@ -27,6 +27,7 @@ import java.util.UUID;
 @Builder
 @AllArgsConstructor
 public class DocumentEntity {
+    /**/
     @Id
     @Column(name = "uuid", nullable = false)
     private UUID id;
@@ -115,10 +116,6 @@ public class DocumentEntity {
     @ColumnDefault("false")
     private Boolean isFullyProcessed;
 
-    public void setFullyProcessed(Boolean fullyProcessed) {
-        isFullyProcessed = fullyProcessed;
-    }
-
     @Override
     public final boolean equals(Object o) {
         if (this == o) {
@@ -141,11 +138,7 @@ public class DocumentEntity {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 
-    public UUID getId() {/**/
-        return id;
-    }
-
-    record TableBig(
+    public record TableBig(
         Integer column1,
         Integer result1,
 
@@ -208,7 +201,7 @@ public class DocumentEntity {
     ) {
     }
 
-    record TableSmall(
+    public record TableSmall(
         Integer column1,
         Integer result1,
 
