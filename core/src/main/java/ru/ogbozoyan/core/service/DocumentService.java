@@ -134,6 +134,11 @@ public class DocumentService {
         return monos;
     }
 
+    //7 Call Ai service to generate tables
+    // TODO
+    public Flux<?> generateTables(UUID uuid) {
+        return Flux.empty();
+    }
 
     //4 Call python backend to split normalises and receive 11 parts
     private ConcurrentHashMap<String, ByteArrayResource> getSplitFiles(String presignedUrl) {
