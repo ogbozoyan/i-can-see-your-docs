@@ -3,17 +3,13 @@ package ru.ogbozoyan.core.service;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
 import ru.ogbozoyan.core.configuration.exception.DescewException;
 
 import java.io.ByteArrayInputStream;
@@ -26,36 +22,28 @@ import java.util.zip.ZipInputStream;
 @Slf4j
 public class DesckewService {
 
-    @Value("${app.descew.api-url}")
-    private String descewApiUrl;
-
     @Autowired
-    private RestTemplate restTemplate;
+    @Qualifier("descewWebClient")
+    private WebClient webClient;
 
 
     @SneakyThrows
-    public ConcurrentHashMap<String, ByteArrayResource> uploadAndGetFiles(Resource fileResource) {
+    public ConcurrentHashMap<String, ByteArrayResource> uploadAndGetFiles(Resource resource) {
+        log.info("Sending file {} to Flask", resource.getFilename());
 
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", fileResource);
+        byte[] zipBytes = webClient.post()
+            .uri("/upload")
+            .contentType(MediaType.MULTIPART_FORM_DATA)
+            .body(BodyInserters.fromMultipartData("file", resource))
+            .retrieve()
+            .bodyToMono(byte[].class)
+            .block();
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-        HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
-
-        ResponseEntity<byte[]> response = restTemplate.postForEntity(
-            descewApiUrl + "/upload",
-            requestEntity,
-            byte[].class
-        );
-
-        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
-            return extractZipToMap(response.getBody());
-        } else {
-            throw new DescewException("Upload failed: " + response.getStatusCode());
+        if (zipBytes == null) {
+            throw new DescewException("Received null body from Flask");
         }
 
+        return extractZipToMap(zipBytes);
     }
 
     @SneakyThrows

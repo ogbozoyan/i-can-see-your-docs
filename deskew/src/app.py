@@ -6,8 +6,11 @@ from typing import Tuple, Union
 import parser_file as parser
 import os
 import util_file # util_file is still needed for save_crops_to_zip
+from werkzeug.exceptions import RequestEntityTooLarge
 
 app = Flask(__name__)
+app.config['MAX_CONTENT_LENGTH'] = 1024*1024*1024*1024
+
 Swagger(app)
 
 logging.basicConfig(
@@ -26,6 +29,27 @@ settings = Dynaconf(
 
 PORT = int(os.environ.get("port", settings.PORT))
 HOST = os.environ.get("host", settings.HOST)
+
+@app.before_request
+def log_request_info():
+    logger.info(
+        f"Request: {request.method} {request.path} | Headers: {dict(request.headers)} | Content-Length: {request.headers.get('Content-Length')}"
+    )
+
+@app.after_request
+def log_response_info(response):
+    logger.info(
+        f"Response: {request.method} {request.path} -> {response.status} | Content-Length: {response.headers.get('Content-Length')}"
+    )
+    return response
+
+@app.errorhandler(RequestEntityTooLarge)
+def handle_413(e):
+    logger.error(
+        f"413 Request Entity Too Large: {request.method} {request.path} | "
+        f"Headers: {dict(request.headers)} | Content-Length: {request.headers.get('Content-Length')}"
+    )
+    return "File too large", 413
 
 
 @app.route('/upload', methods=['POST'])

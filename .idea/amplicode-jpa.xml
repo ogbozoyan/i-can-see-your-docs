@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="AmplicodeJpaIdeaProjectConfig" newRepositoryParent="org.springframework.data.jpa.repository.JpaRepository">
+  <component name="AmplicodeJpaIdeaProjectConfig">
     <option name="defaultUnitInitialized" value="true" />
     <option name="renamerInitialized" value="true" />
-    <option name="reverseEngineeringLastDbConnectionId" value="2910bad2-c1e2-4301-a8b8-bedf5e8cfc24__ocr_public" />
-    <option name="reLastEntityCreationPackage" value="core/src/main/java/ru/ogbozoyan/core" />
   </component>
 </project>

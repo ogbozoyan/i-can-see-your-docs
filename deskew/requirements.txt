@@ -9,3 +9,4 @@ pip==25.0.1
 pytesseract==0.3.13
 setuptools==78.1.0
 wheel==0.45.1
+werkzeug==3.1.3

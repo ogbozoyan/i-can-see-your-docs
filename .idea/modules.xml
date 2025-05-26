@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/core.main.iml" filepath="$PROJECT_DIR$/.idea/modules/core.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/deskew/deskew.iml" filepath="$PROJECT_DIR$/deskew/deskew.iml" />
-      <module fileurl="file://$PROJECT_DIR$/deskew/ocr-uni-project.iml" filepath="$PROJECT_DIR$/deskew/ocr-uni-project.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/i-can-see-your-docs.iml" filepath="$PROJECT_DIR$/.idea/i-can-see-your-docs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/web/web.iml" filepath="$PROJECT_DIR$/web/web.iml" />
     </modules>
   </component>
 </project>

@@ -144,6 +144,8 @@ public class DocumentEntity {
     }
 
     public record TableBig(
+        String tableName,
+
         Integer column1,
         Integer result1,
 
@@ -207,6 +209,8 @@ public class DocumentEntity {
     }
 
     public record TableSmall(
+        String tableName,
+
         Integer column1,
         Integer result1,
 
