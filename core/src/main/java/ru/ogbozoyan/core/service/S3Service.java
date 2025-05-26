@@ -77,7 +77,6 @@ public class S3Service {
     }
 
 
-    @SneakyThrows
     public byte[] downloadFile(UUID uuid, String filename) {
         String keyAbsolute = uuid + "/" + filename;
         return downloadFile(keyAbsolute);
