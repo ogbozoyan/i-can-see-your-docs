@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS document (
     uuid UUID PRIMARY KEY,
-
-    original_url VARCHAR,
+    s3_key VARCHAR,
+    file_name VARCHAR,
 
     table_1_url VARCHAR,
     table_1_result JSONB,
@@ -36,5 +36,5 @@ CREATE TABLE IF NOT EXISTS document (
     employee_number_url VARCHAR,
     employee_number_result JSONB,
 
-    is_fully_processed BOOLEAN
+    is_fully_processed BOOLEAN default false
 );

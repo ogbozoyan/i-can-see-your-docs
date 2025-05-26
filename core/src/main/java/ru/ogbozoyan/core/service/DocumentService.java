@@ -16,13 +16,14 @@ import ru.ogbozoyan.core.web.dto.S3CustomResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Service
 @Slf4j
+@Service
 public class DocumentService {
 
     private final DocumentEntityRepository documentRepository;
@@ -75,20 +76,28 @@ public class DocumentService {
 
 
     @SuppressWarnings({"LoggingSimilarMessage"})
-    public Flux<UploadedFileResponse> uploadDocumentAndProcess(MultipartFile multipartFile) {
+    public DocumentEntity uploadDocument(MultipartFile multipartFile) {
+        return Mono.just(documentService.saveAndAddUrl(multipartFile)).block();
+    }
 
-        DocumentEntity uploadedDoc = lock.execute(() -> documentService.saveAndAddUrl(multipartFile));
+    public Flux<UploadedFileResponse> splitDocumentToPartsAndUploadToS3(UUID uuid) {
+        DocumentEntity documentEntity = lock.execute(
+            () -> documentRepository.findById(uuid).orElseThrow(() -> new DocumentServiceException("Document not found"))
+        );
 
-        ConcurrentHashMap<String, ByteArrayResource> nameAndResourceMap = getSplitFiles(multipartFile);
+        ConcurrentHashMap<String, ByteArrayResource> nameAndResourceMap = getSplitFiles(
+            s3Service.getPresignedUrl(documentEntity.getId(), documentEntity.getFileName())
+        );
+
         log.info("Received {} files", nameAndResourceMap.size());
 
-        //6 Upload all parts to S3
-        List<Mono<UploadedFileResponse>> uploadMonos = uploadSplitFiles(nameAndResourceMap, uploadedDoc);
+        List<Mono<UploadedFileResponse>> uploadMonos = uploadSplitFiles(nameAndResourceMap, documentEntity);
 
-        return Flux.merge(uploadMonos);
+        return Flux.concat(uploadMonos);
     }
 
 
+    //6 Upload all parts to S3
     private List<Mono<UploadedFileResponse>> uploadSplitFiles(
         ConcurrentHashMap<String, ByteArrayResource> nameAndResourceMap,
         DocumentEntity uploadedDoc
@@ -126,10 +135,10 @@ public class DocumentService {
     }
 
 
-    private ConcurrentHashMap<String, ByteArrayResource> getSplitFiles(MultipartFile multipartFile) {
-        //4 Call python backend to split normalises and receive 11 parts
+    //4 Call python backend to split normalises and receive 11 parts
+    private ConcurrentHashMap<String, ByteArrayResource> getSplitFiles(String presignedUrl) {
         try {
-            return desckewService.uploadAndGetFiles(multipartFile.getResource());
+            return desckewService.uploadAndGetFiles(presignedUrl);
         } catch (Exception e) {
             log.error("Could not send file to Desckew service", e);
             throw new DocumentServiceException(e);

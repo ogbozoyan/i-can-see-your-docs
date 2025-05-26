@@ -37,8 +37,11 @@ public class DocumentEntity {
     @UuidGenerator
     private UUID id;
 
-    @Column(name = "original_url", length = Integer.MAX_VALUE)
-    private String originalUrl;
+    @Column(name = "s3_key", length = Integer.MAX_VALUE)
+    private String s3Key;
+
+    @Column(name = "file_name", length = Integer.MAX_VALUE)
+    private String fileName;
 
     @Column(name = "table_1_url", length = Integer.MAX_VALUE)
     private String table_1_url;

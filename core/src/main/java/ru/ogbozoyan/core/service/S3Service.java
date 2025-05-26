@@ -42,13 +42,14 @@ public class S3Service {
     @SneakyThrows
     public S3CustomResponse uploadFile(UUID uuid, MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
-        String key = uuid + "/" + originalFilename;
+        String keyAbsolute = uuid + "/" + originalFilename;
+        String key = uuid + "/";
 
         ensureBucket();
 
         PutObjectRequest putRequest = PutObjectRequest.builder()
             .bucket(properties.getS3Bucket())
-            .key(key)
+            .key(keyAbsolute)
             .contentType(file.getContentType())
             .build();
 
@@ -60,14 +61,14 @@ public class S3Service {
     @SneakyThrows
     public S3CustomResponse uploadFile(UUID uuid, ByteArrayResource baos, String originalFilename) {
 
-        String key = uuid + "/" + originalFilename;
+        String keyAbsolute = uuid + "/" + originalFilename;
+        String key = uuid + "/";
 
         ensureBucket();
 
         PutObjectRequest putRequest = PutObjectRequest.builder()
             .bucket(properties.getS3Bucket())
-            .key(key)
-//            .contentType()
+            .key(keyAbsolute)
             .build();
 
         s3Client.putObject(putRequest, RequestBody.fromBytes(baos.getContentAsByteArray()));
@@ -78,11 +79,15 @@ public class S3Service {
 
     @SneakyThrows
     public byte[] downloadFile(UUID uuid, String filename) {
-        String key = uuid + "/" + filename;
+        String keyAbsolute = uuid + "/" + filename;
+        return downloadFile(keyAbsolute);
+    }
 
+    @SneakyThrows
+    public byte[] downloadFile(String absolutePath) {
         GetObjectRequest getRequest = GetObjectRequest.builder()
             .bucket(properties.getS3Bucket())
-            .key(key)
+            .key(absolutePath)
             .build();
 
         try (ResponseInputStream<GetObjectResponse> inputStream = s3Client.getObject(getRequest)) {

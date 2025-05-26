@@ -1,4 +1,6 @@
 import logging
+
+import requests
 from flask import Flask, request, Response
 from flasgger import Swagger
 from dynaconf import Dynaconf
@@ -65,54 +67,57 @@ def upload_file() -> Union[Response, Tuple[str, int]]:
       - name: file
         in: formData
         type: file
-        required: true
+        required: false
         description: Файл для обработки
+      - name: url
+        in: formData
+        type: string
+        required: false
+        description: URL файла для обработки
     responses:
       200:
         description: ZIP архив с 14 файлами
-        content:
-          application/zip:
-            schema:
-              type: string
-              format: binary
       400:
-        description: Файл не был загружен или выбран
+        description: Ошибка при загрузке файла
     """
-    if 'file' not in request.files:
-        logger.warning("No file part in the request.")
-        return 'No file part in the request', 400
+    file_content_bytes = None
 
-    uploaded_file = request.files['file']
+    if 'file' in request.files:
+        uploaded_file = request.files['file']
+        if uploaded_file.filename == '':
+            return 'No file selected', 400
+        file_content_bytes = uploaded_file.read()
 
-    if uploaded_file.filename == '':
-        logger.warning("No file selected for uploading.")
-        return 'No file selected', 400
+    elif 'url' in request.form:
+        file_url = request.form['url']
+        logger.info(f"Fetching file from URL: {file_url}")
+        try:
+            response = requests.get(file_url, timeout=100)
+            response.raise_for_status()
+            file_content_bytes = response.content
+        except requests.RequestException as e:
+            logger.error(f"Failed to fetch file from URL: {e}")
+            return f"Failed to fetch file from URL: {str(e)}", 400
+    else:
+        return 'No file or URL provided', 400
 
     try:
-        file_content_bytes: bytes = uploaded_file.read()
-        # filename = uploaded_file.filename # Keep if needed for logging or other purposes
-
-        # Instead of saving to file, pass bytes directly to the parser
-        # file_path =  util_file.save_bits_to_file(file_content, uploaded_file.filename) # REMOVE
-        crops = parser.parser(file_content_bytes) # MODIFIED: Pass bytes
-        zip_buffer = util_file.save_crops_to_zip(crops) # This function already works with in-memory data
-
-        # util_file.delete_file(file_path) # REMOVE: No file to delete
+        crops = parser.parser(file_content_bytes)
+        zip_buffer = util_file.save_crops_to_zip(crops)
 
         return Response(
-            zip_buffer.getvalue(), # getvalue() is correct for BytesIO
+            zip_buffer.getvalue(),
             mimetype="application/zip",
             headers={
-                "Content-Disposition": f"attachment;filename=result.zip", # Ensure result.zip is a desired filename
+                "Content-Disposition": f"attachment;filename=result.zip",
                 "Content-Length": len(zip_buffer.getvalue())
             }
         )
-
-    except ValueError as ve: # Catch specific error from parser if image decoding fails
+    except ValueError as ve:
         logger.error(f"Error decoding image: {str(ve)}")
-        return f"Error processing file (image decoding): {str(ve)}", 400 # Potentially a 400 if bad image data
+        return f"Error processing file (image decoding): {str(ve)}", 400
     except Exception as e:
-        logger.error(f"Error processing file: {str(e)}", exc_info=True) # Add exc_info for better traceback in logs
+        logger.error(f"Error processing file: {str(e)}", exc_info=True)
         return f"Error processing file: {str(e)}", 500
 
 if __name__ == '__main__':

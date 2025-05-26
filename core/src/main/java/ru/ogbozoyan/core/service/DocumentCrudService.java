@@ -26,7 +26,8 @@ public class DocumentCrudService {
         S3CustomResponse s3CustomResponse = s3Service.uploadFile(uploadedDoc.getId(), multipartFile);
 
         //3 Receive link to file and update uploadedDoc
-        uploadedDoc.setOriginalUrl(s3CustomResponse.key());
+        uploadedDoc.setFileName(s3CustomResponse.filename());
+        uploadedDoc.setS3Key(s3CustomResponse.key());
         documentRepository.save(uploadedDoc);
         return uploadedDoc;
     }

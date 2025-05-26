@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.BodyInserters;
@@ -27,14 +26,13 @@ public class DesckewService {
     private WebClient webClient;
 
 
-    @SneakyThrows
-    public ConcurrentHashMap<String, ByteArrayResource> uploadAndGetFiles(Resource resource) {
-        log.info("Sending file {} to Flask", resource.getFilename());
+    public ConcurrentHashMap<String, ByteArrayResource> uploadAndGetFiles(String preSignedUrl) {
+        log.info("Sending file to Flask URL: {}", preSignedUrl);
 
         byte[] zipBytes = webClient.post()
             .uri("/upload")
             .contentType(MediaType.MULTIPART_FORM_DATA)
-            .body(BodyInserters.fromMultipartData("file", resource))
+            .body(BodyInserters.fromMultipartData("url", preSignedUrl))
             .retrieve()
             .bodyToMono(byte[].class)
             .block();
