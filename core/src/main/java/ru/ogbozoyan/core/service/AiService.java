@@ -59,12 +59,9 @@ public class AiService {
             .entity(BigDecimal.class);
     }
 
-    public TableBig processTableAiBigTable(String url, TableNamesEnum tableName) {
-        if (!(tableName == TableNamesEnum.TABLE_1)) {
-            throw new IllegalArgumentException("Неправильно название БОЛЬШОЙ таблицы");
-        }
+    public TableBig processTableAiBigTable(String url) {
 
-        String prompt = TABLE_PROCESSING_FORMAT_PROMPT.formatted(tableName.getName());
+        String prompt = TABLE_PROCESSING_FORMAT_PROMPT.formatted(TableNamesEnum.TABLE_1.getName());
         byte[] imageBytes = s3Service.downloadFile(url);
 
         assert imageBytes != null;

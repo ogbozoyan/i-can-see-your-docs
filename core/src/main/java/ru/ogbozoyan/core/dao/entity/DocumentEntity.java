@@ -166,4 +166,18 @@ public class DocumentEntity {
             case LAST_NUMBER_TABLE -> this.employeeNumberUrl;
         };
     }
+
+    public void setSmallTableByName(TableNamesEnum tableName, TableSmall tableSmall) {
+        switch (tableName) {
+            case TABLE_1_2 -> this.table_1_2_Result = tableSmall;
+            case TABLE_2_1 -> this.table_2_1_result = tableSmall;
+            case TABLE_2_2 -> this.table_2_2_Result = tableSmall;
+            case TABLE_3_1 -> this.table_3_1_result = tableSmall;
+            case TABLE_3_2 -> this.table_3_2_result = tableSmall;
+            case TABLE_4_1 -> this.table_4_1_result = tableSmall;
+            case TABLE_4_2 -> this.table_4_2_result = tableSmall;
+            case TABLE_5_1 -> this.table_5_1_result = tableSmall;
+            case TABLE_5_2 -> this.table_5_2_result = tableSmall;
+        }
+    }
 }

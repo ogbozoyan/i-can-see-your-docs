@@ -46,4 +46,9 @@ public class DocumentCrudService {
     public DocumentEntity findByUuid(UUID uuid) {
         return documentRepository.findById(uuid).orElse(null);
     }
+
+    @Transactional
+    public DocumentEntity saveAndFlush(DocumentEntity byUuid) {
+        return documentRepository.saveAndFlush(byUuid);
+    }
 }

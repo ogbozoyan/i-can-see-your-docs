@@ -15,6 +15,7 @@ import ru.ogbozoyan.core.dao.entity.TableBig;
 import ru.ogbozoyan.core.dao.entity.TableNamesEnum;
 import ru.ogbozoyan.core.dao.entity.TableSmall;
 import ru.ogbozoyan.core.dao.repository.DocumentEntityRepository;
+import ru.ogbozoyan.core.web.api.DocumentEditTableResultReauestDTO;
 import ru.ogbozoyan.core.web.dto.S3CustomResponse;
 
 import java.math.BigDecimal;
@@ -79,6 +80,7 @@ public class DocumentService {
         log.info("Initialized files {}", fileNames);
     }
 
+
     public record UploadedFileResponse(String name, String url) {
     }
 
@@ -100,6 +102,46 @@ public class DocumentService {
     public List<DocumentEntity> findAll() {
         return documentCrudService.findAll();
     }
+
+    @Transactional
+    public DocumentEntity editTableResult(UUID uuid, TableNamesEnum tableName, Boolean isBig, DocumentEditTableResultReauestDTO tableResultReauestDTO) {
+
+        DocumentEntity byUuid = documentCrudService.findByUuid(uuid);
+        if (isBig) {
+            byUuid.setTable_1_Result(tableResultReauestDTO.tableBig());
+        } else {
+            byUuid.setSmallTableByName(tableName, tableResultReauestDTO.tableSmall());
+        }
+        return documentCrudService.saveAndFlush(byUuid);
+    }
+
+    public Boolean reprocessTable(UUID uuid, TableNamesEnum tableName) {
+        DocumentEntity byUuid = documentCrudService.findByUuid(uuid);
+
+        if (!byUuid.getIsFullyProcessed() || !byUuid.getIsSplit()) {
+            return false;
+        }
+
+        String urlByTableName = byUuid.getUrlByTableName(tableName);
+        if (tableName.equals(LAST_NUMBER_TABLE)) {
+            BigDecimal bigDecimal = aiService.processEmployeeAi(urlByTableName);
+            byUuid.setEmployeeNumberResult(bigDecimal);
+            documentCrudService.saveAndFlush(byUuid);
+            return true;
+        } else if (tableName.equals(TABLE_1)) {
+            TableBig tableBig = aiService.processTableAiBigTable(urlByTableName);
+            byUuid.setTable_1_Result(tableBig);
+            documentCrudService.saveAndFlush(byUuid);
+            return true;
+        } else {
+            TableSmall tableSmall = aiService.processTableAiSmall(urlByTableName, tableName);
+            byUuid.setSmallTableByName(tableName, tableSmall);
+            documentCrudService.saveAndFlush(byUuid);
+            return true;
+        }
+
+    }
+
 
     @Transactional(readOnly = true)
     public DocumentEntity findByUuid(UUID uuid) {
@@ -221,7 +263,7 @@ public class DocumentService {
                     switch (tableNameEnum) {
                         case TABLE_1 -> {
                             log.info("Processing Big table 1");
-                            bigTable.set(aiService.processTableAiBigTable(documentEntity.getUrlByTableName(tableNameEnum), tableNameEnum));
+                            bigTable.set(aiService.processTableAiBigTable(documentEntity.getUrlByTableName(tableNameEnum)));
                         }
                         case TABLE_1_2, TABLE_5_2, TABLE_5_1, TABLE_4_2, TABLE_4_1, TABLE_3_2, TABLE_3_1, TABLE_2_2, TABLE_2_1 -> {
                             log.info("Processing table {}", tableNameEnum);
