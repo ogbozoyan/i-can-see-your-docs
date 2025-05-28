@@ -18,6 +18,7 @@ import org.hibernate.annotations.UuidGenerator;
 import org.hibernate.proxy.HibernateProxy;
 import org.hibernate.type.SqlTypes;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -117,8 +118,8 @@ public class DocumentEntity {
     private String employeeNumberUrl;
 
     @Column(name = "employee_number_result")
-    @JdbcTypeCode(SqlTypes.JSON)
-    private TableSmall employeeNumberResult;
+    @JdbcTypeCode(SqlTypes.NUMERIC)
+    private BigDecimal employeeNumberResult;
 
     @Column(name = "is_fully_processed")
     @ColumnDefault("false")
@@ -150,95 +151,19 @@ public class DocumentEntity {
         return this instanceof HibernateProxy proxy ? proxy.getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
     }
 
-    public record TableBig(
-        String tableName,
-
-        Integer column1,
-        Integer result1,
-
-        Integer column2,
-        Integer result2,
-
-        Integer column3,
-        Integer result3,
-
-        Integer column4,
-        Integer result4,
-
-        Integer column5,
-        Integer result5,
-
-        Integer column6,
-        Integer result6,
-
-        Integer column7,
-        Integer result7,
-
-        Integer column8,
-        Integer result8,
-
-        Integer column9,
-        Integer result9,
-
-        Integer column10,
-        Integer result10,
-
-        Integer column11,
-        Integer result11,
-
-        Integer column12,
-        Integer result12,
-
-        Integer column13,
-        Integer result13,
-
-        Integer column14,
-        Integer result14,
-
-        Integer column15,
-        Integer result15,
-
-        Integer column16,
-        Integer result16,
-
-        Integer column17,
-        Integer result17,
-
-        Integer column18,
-        Integer result18,
-
-        Integer column19,
-        Integer result19,
-
-        Integer column20,
-        Integer result20
-    ) {
+    public String getUrlByTableName(TableNamesEnum tableNameEnum) {
+        return switch (tableNameEnum) {
+            case TABLE_1 -> this.table_1_url;
+            case TABLE_1_2 -> this.table_1_2_url;
+            case TABLE_2_1 -> this.table_2_1_url;
+            case TABLE_2_2 -> this.table_2_2_url;
+            case TABLE_3_1 -> this.table_3_1_url;
+            case TABLE_3_2 -> this.table_3_2_url;
+            case TABLE_4_1 -> this.table_4_1_url;
+            case TABLE_4_2 -> this.table_4_2_url;
+            case TABLE_5_1 -> this.table_5_1_url;
+            case TABLE_5_2 -> this.table_5_2_url;
+            case LAST_NUMBER_TABLE -> this.employeeNumberUrl;
+        };
     }
-
-    public record TableSmall(
-        String tableName,
-
-        Integer column1,
-        Integer result1,
-
-        Integer column2,
-        Integer result2,
-
-        Integer column3,
-        Integer result3,
-
-        Integer column4,
-        Integer result4,
-
-        Integer column5,
-        Integer result5,
-
-        Integer column6,
-        Integer result6,
-
-        Integer column7,
-        Integer result7
-    ) {
-    }
-
 }

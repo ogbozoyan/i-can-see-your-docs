@@ -7,6 +7,9 @@ import ru.ogbozoyan.core.dao.entity.DocumentEntity;
 import ru.ogbozoyan.core.dao.repository.DocumentEntityRepository;
 import ru.ogbozoyan.core.web.dto.S3CustomResponse;
 
+import java.util.List;
+import java.util.UUID;
+
 @Service
 public class DocumentCrudService {
     private final DocumentEntityRepository documentRepository;
@@ -28,7 +31,19 @@ public class DocumentCrudService {
         //3 Receive link to file and update uploadedDoc
         uploadedDoc.setFileName(s3CustomResponse.filename());
         uploadedDoc.setS3Key(s3CustomResponse.key());
+        uploadedDoc.setIsFullyProcessed(false);
+        uploadedDoc.setIsSplit(false);
         documentRepository.save(uploadedDoc);
         return uploadedDoc;
+    }
+
+    @Transactional(readOnly = true)
+    public List<DocumentEntity> findAll() {
+        return documentRepository.findAll();
+    }
+
+    @Transactional(readOnly = true)
+    public DocumentEntity findByUuid(UUID uuid) {
+        return documentRepository.findById(uuid).orElse(null);
     }
 }
