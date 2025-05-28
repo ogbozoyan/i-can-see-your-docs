@@ -32,11 +32,13 @@ public class S3Service {
     private final S3Client s3Client;
     private final S3Presigner s3Presigner;
     private final S3Properties properties;
+    private final S3Presigner minioS3Presigner;
 
-    public S3Service(S3Client s3Client, S3Presigner s3Presigner, S3Properties properties) {
+    public S3Service(S3Client s3Client, S3Presigner s3Presigner, S3Properties properties, S3Presigner minioS3Presigner) {
         this.s3Client = s3Client;
         this.s3Presigner = s3Presigner;
         this.properties = properties;
+        this.minioS3Presigner = minioS3Presigner;
     }
 
     @SneakyThrows
@@ -107,7 +109,21 @@ public class S3Service {
             .getObjectRequest(getObjectRequest)
             .build();
 
-        return s3Presigner.presignGetObject(presignRequest).url().toString();
+        return minioS3Presigner.presignGetObject(presignRequest).url().toString();
+    }
+    public String getPresignedUrl(String filePath) {
+
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+            .bucket(properties.getS3Bucket())
+            .key(filePath)
+            .build();
+
+        GetObjectPresignRequest presignRequest = GetObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(30))
+            .getObjectRequest(getObjectRequest)
+            .build();
+
+        return minioS3Presigner.presignGetObject(presignRequest).url().toString();
     }
 
     public String resolveFilenameFromS3(UUID uuid) {

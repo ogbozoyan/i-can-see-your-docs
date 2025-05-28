@@ -9,8 +9,8 @@ services:
       TZ: Europe/Moscow
       LANG: en_US.UTF-8
       MINIO_PROMETHEUS_AUTH_TYPE: "public"
-      MINIO_ROOT_USER: admin12345678
-      MINIO_ROOT_PASSWORD: admin12345678
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
     command: server /data  --console-address ":9001"
     logging:
       driver: "json-file"

@@ -80,10 +80,14 @@ public class DocumentService {
         return Mono.just(documentService.saveAndAddUrl(multipartFile)).block();
     }
 
-    public Flux<UploadedFileResponse> splitDocumentToPartsAndUploadToS3(UUID uuid) {
+    public Flux<UploadedFileResponse> splitDocumentToPartsAndUploadToS3Stream(UUID uuid) {
         DocumentEntity documentEntity = lock.execute(
             () -> documentRepository.findById(uuid).orElseThrow(() -> new DocumentServiceException("Document not found"))
         );
+
+        if (documentEntity.getIsSplit() != null && documentEntity.getIsSplit()) {
+            return alreadySplitFlux(documentEntity);
+        }
 
         ConcurrentHashMap<String, ByteArrayResource> nameAndResourceMap = getSplitFiles(
             s3Service.getPresignedUrl(documentEntity.getId(), documentEntity.getFileName())
@@ -93,11 +97,35 @@ public class DocumentService {
 
         List<Mono<UploadedFileResponse>> uploadMonos = uploadSplitFiles(nameAndResourceMap, documentEntity);
 
+        documentEntity.setIsSplit(true);
+        documentRepository.saveAndFlush(documentEntity);
         return Flux.concat(uploadMonos);
+    }
+
+    public List<UploadedFileResponse> splitDocumentToPartsAndUploadToS3(UUID uuid) {
+        DocumentEntity documentEntity = lock.execute(
+            () -> documentRepository.findById(uuid).orElseThrow(() -> new DocumentServiceException("Document not found"))
+        );
+
+        if (documentEntity.getIsSplit() != null && documentEntity.getIsSplit()) {
+            return alreadySplit(documentEntity);
+        }
+        ConcurrentHashMap<String, ByteArrayResource> nameAndResourceMap = getSplitFiles(
+            s3Service.getPresignedUrl(documentEntity.getId(), documentEntity.getFileName())
+        );
+
+        log.info("Received {} files", nameAndResourceMap.size());
+
+        List<Mono<UploadedFileResponse>> uploadMonos = uploadSplitFiles(nameAndResourceMap, documentEntity);
+
+        documentEntity.setIsSplit(true);
+        documentRepository.saveAndFlush(documentEntity);
+        return Flux.concat(uploadMonos).collectList().block();
     }
 
 
     //6 Upload all parts to S3
+
     private List<Mono<UploadedFileResponse>> uploadSplitFiles(
         ConcurrentHashMap<String, ByteArrayResource> nameAndResourceMap,
         DocumentEntity uploadedDoc
@@ -124,7 +152,7 @@ public class DocumentService {
                         documentRepository.save(uploadedDoc);
                     }
 
-                    return new UploadedFileResponse(name, response.key());
+                    return new UploadedFileResponse(name, response.key() + name);
                 }, uploadExecutor)
             );
 
@@ -133,14 +161,14 @@ public class DocumentService {
 
         return monos;
     }
-
     //7 Call Ai service to generate tables
     // TODO
+
     public Flux<?> generateTables(UUID uuid) {
         return Flux.empty();
     }
-
     //4 Call python backend to split normalises and receive 11 parts
+
     private ConcurrentHashMap<String, ByteArrayResource> getSplitFiles(String presignedUrl) {
         try {
             return desckewService.uploadAndGetFiles(presignedUrl);
@@ -167,4 +195,35 @@ public class DocumentService {
     }
 
 
+    private static Flux<UploadedFileResponse> alreadySplitFlux(DocumentEntity documentEntity) {
+        log.info("Document {} is already split", documentEntity.getId());
+        return Flux.concat(Mono.fromSupplier(() -> new UploadedFileResponse("table_1.png", documentEntity.getS3Key() + "table_1.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("table_1_2.png", documentEntity.getS3Key() + "table_1_2.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("table_2_1.png", documentEntity.getS3Key() + "table_2_1.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("table_2_2.png", documentEntity.getS3Key() + "table_2_2.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("table_3_1.png", documentEntity.getS3Key() + "table_3_1.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("table_3_2.png", documentEntity.getS3Key() + "table_3_2.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("table_4_1.png", documentEntity.getS3Key() + "table_4_1.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("table_4_2.png", documentEntity.getS3Key() + "table_4_2.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("table_5_1.png", documentEntity.getS3Key() + "table_5_1.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("table_5_2.png", documentEntity.getS3Key() + "last_number.png")),
+            Mono.fromSupplier(() -> new UploadedFileResponse("last_number.png", documentEntity.getS3Key() + "last_number.png"))
+        );
+    }
+
+    private static List<UploadedFileResponse> alreadySplit(DocumentEntity documentEntity) {
+        log.info("Document {} is already split", documentEntity.getId());
+        return List.of(new UploadedFileResponse("table_1.png", documentEntity.getS3Key() + "table_1.png"),
+            new UploadedFileResponse("table_1_2.png", documentEntity.getS3Key() + "table_1_2.png"),
+            new UploadedFileResponse("table_2_1.png", documentEntity.getS3Key() + "table_2_1.png"),
+            new UploadedFileResponse("table_2_2.png", documentEntity.getS3Key() + "table_2_2.png"),
+            new UploadedFileResponse("table_3_1.png", documentEntity.getS3Key() + "table_3_1.png"),
+            new UploadedFileResponse("table_3_2.png", documentEntity.getS3Key() + "table_3_2.png"),
+            new UploadedFileResponse("table_4_1.png", documentEntity.getS3Key() + "table_4_1.png"),
+            new UploadedFileResponse("table_4_2.png", documentEntity.getS3Key() + "table_4_2.png"),
+            new UploadedFileResponse("table_5_1.png", documentEntity.getS3Key() + "table_5_1.png"),
+            new UploadedFileResponse("table_5_2.png", documentEntity.getS3Key() + "last_number.png"),
+            new UploadedFileResponse("last_number.png", documentEntity.getS3Key() + "last_number.png")
+        );
+    }
 }

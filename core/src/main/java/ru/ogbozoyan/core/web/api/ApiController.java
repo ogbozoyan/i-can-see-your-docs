@@ -26,6 +26,7 @@ import ru.ogbozoyan.core.service.DocumentService;
 import ru.ogbozoyan.core.service.S3Service;
 import ru.ogbozoyan.core.web.dto.S3CustomResponse;
 
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -50,28 +51,37 @@ public class ApiController {
 
     @PostMapping(value = "/descew")
     @ResponseStatus(HttpStatus.OK)
-    @Operation
+    @Operation(hidden = true)
+    @Deprecated
     public ResponseEntity<ConcurrentHashMap<String, ByteArrayResource>> testDesckew(@RequestParam("presignedUrl") String preSignedUrl) {
         return ResponseEntity.ok(desckewService.uploadAndGetFiles(preSignedUrl));
     }
 
     @PostMapping(value = "/document",
-        consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @Operation
-    public DocumentEntity documentUpload(@RequestParam("file") MultipartFile multipartFile) {
+        consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "1 шаг. Сохранить докмуент и получить uuid + url сохраненного документа")
+    public DocumentEntity documentUploadAndSaveToDB(@RequestParam("file") MultipartFile multipartFile) {
         return documentService.uploadDocument(multipartFile);
     }
 
-    @GetMapping(value = "/document/split",
+    @GetMapping(value = "/document/split/streaming",
         produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    @Operation
-    public Flux<DocumentService.UploadedFileResponse> splitDocumentAndUploadToS3(@RequestParam("uuid") UUID uuid) {
-        return documentService.splitDocumentToPartsAndUploadToS3(uuid);
+    @Operation(description = "2 шаг. Сюда отправляется uuid документа после 1 шага", deprecated = true)
+    public Flux<DocumentService.UploadedFileResponse> splitDocumentAndUploadToS3Streaming(@RequestParam("uuid") UUID uuid) {
+        return documentService.splitDocumentToPartsAndUploadToS3Stream(uuid);
+    }
+
+    @GetMapping(value = "/document/split", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(description = "2 шаг. Сюда отправляется uuid документа после 1 шага, полученные name + url нужно по очереди отправить для получения ответа от нейронки")
+    public ResponseEntity<List<DocumentService.UploadedFileResponse>> splitDocumentAndUploadToS3(@RequestParam("uuid") UUID uuid) {
+        return ResponseEntity.ok(documentService.splitDocumentToPartsAndUploadToS3(uuid));
     }
 
     @PostMapping(value = "/upload",
         consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
+    @Deprecated
+    @Operation(hidden = true)
     public ResponseEntity<S3CustomResponse> upload(@RequestParam("file") MultipartFile file) {
         UUID uuid = UUID.randomUUID();
         return ResponseEntity.ok(s3Service.uploadFile(uuid, file));
@@ -79,6 +89,8 @@ public class ApiController {
 
 
     @GetMapping("/download/{uuid}/{filename}")
+    @Deprecated
+    @Operation(hidden = true)
     public ResponseEntity<byte[]> downloadByUuidAndFilename(@PathVariable UUID uuid,
                                                             @PathVariable String filename) {
         byte[] file = s3Service.downloadFile(uuid, filename);
@@ -89,15 +101,24 @@ public class ApiController {
     }
 
     @GetMapping("/presigned-url/{uuid}")
+    @Deprecated
+    @Operation(hidden = true)
     public ResponseEntity<String> getPresignedUrlByUuid(@PathVariable UUID uuid) {
         String filename = s3Service.resolveFilenameFromS3(uuid);
         return ResponseEntity.ok(s3Service.getPresignedUrl(uuid, filename));
     }
 
     @GetMapping("/presigned-url/{uuid}/{filename}")
+    @Operation(description = "Получить пресignedUrl для скачивания файла по uuid и имени файла")
     public ResponseEntity<String> getPresignedUrlByUuidAndFilename(@PathVariable UUID uuid,
                                                                    @PathVariable String filename) {
         return ResponseEntity.ok(s3Service.getPresignedUrl(uuid, filename));
+    }
+
+    @GetMapping("/presigned-url/{filepath}")
+    @Operation(description = "Получить пресignedUrl для скачивания файла по пути полному до файла key+/+name")
+    public ResponseEntity<String> getPresignedUrlByUuidAndFilename(@PathVariable String filepath) {
+        return ResponseEntity.ok(s3Service.getPresignedUrl(filepath));
     }
 
 }

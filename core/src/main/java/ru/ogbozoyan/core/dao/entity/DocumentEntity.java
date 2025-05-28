@@ -124,6 +124,10 @@ public class DocumentEntity {
     @ColumnDefault("false")
     private Boolean isFullyProcessed = Boolean.FALSE;
 
+    @Column(name = "is_split")
+    @ColumnDefault("false")
+    private Boolean isSplit = Boolean.FALSE;
+
     @Override
     public final boolean equals(Object o) {
         if (this == o) {
