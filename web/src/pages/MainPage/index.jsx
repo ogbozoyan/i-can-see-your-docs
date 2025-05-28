@@ -60,7 +60,7 @@ export const MainPage = () => {
                 <FileUploadButton />
             </UploadFileButtonWrapper>
             <CardWrapper>
-                <Card/>
+                <Card isMainPage={true}/>
                 <Card/>
                 <Card/>
                 <Card/>

@@ -1,7 +1,7 @@
 import { Button } from "@mui/material"
 import styled from "styled-components"
 
-export const Card = (photo, data = []) => {
+export const Card = ({data = [], isMainPage, photo}) => {
 
 
   const CardBody = styled.article`
@@ -23,14 +23,18 @@ export const Card = (photo, data = []) => {
   if (data.length) {
     return (
       <CardBody>
-        <StyledRegenerateButton>Regenerate</StyledRegenerateButton>
+        {!isMainPage && (
+          <StyledRegenerateButton>Regenerate</StyledRegenerateButton>
+        )}
         card
       </CardBody>
     )
   } else {
     return (
       <CardBody>
-        <StyledRegenerateButton>Regenerate</StyledRegenerateButton>
+        {!isMainPage && (
+          <StyledRegenerateButton>Regenerate</StyledRegenerateButton>
+        )}
         card
       </CardBody>
     )
