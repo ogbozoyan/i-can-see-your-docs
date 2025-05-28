@@ -29,7 +29,7 @@ export const FileUploadButton = () => {
       tabIndex={-1}
       startIcon={<CloudUploadIcon />}
     >
-      Upload files
+      Загрузить файл
       <VisuallyHiddenInput
         type="file"
         onChange={(event) => console.log(event.target.files)}
