@@ -10,9 +10,11 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MimeTypeUtils;
-import org.springframework.web.client.RestTemplate;
-import reactor.core.publisher.Flux;
+import ru.ogbozoyan.core.dao.entity.TableBig;
+import ru.ogbozoyan.core.dao.entity.TableNamesEnum;
+import ru.ogbozoyan.core.dao.entity.TableSmall;
 
+import java.math.BigDecimal;
 
 @Slf4j
 @Service
@@ -23,11 +25,21 @@ public class AiService {
     private ChatClient openAiChatClient;
 
     @Autowired
-    private RestTemplate restTemplate;
+    private S3Service s3Service;
 
+    private final String TABLE_PROCESSING_FORMAT_PROMPT = """
+        Используя таблицу {%s}, извлеки значения согласно формату ниже:
+        
+        * Для каждой ячейки укажи её соответствующее целочисленное значение.
+        * Если в ячейке несколько возможных значений или ты не уверен в точности, выведи все варианты с указанием уверенности каждого.
+        * Если ячейка пустая или значения нет, выводи null.
+        
+        Формат вывода менять нельзя, он должен быть строго таким, как указано!
+        """;
 
-    public Flux<String> processEmployeeAi(String url) {
-        byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
+    public BigDecimal processEmployeeAi(String url) {
+
+        byte[] imageBytes = s3Service.downloadFile(url);
 
         Resource imageResource = new ByteArrayResource(imageBytes);
 
@@ -43,32 +55,14 @@ public class AiService {
             )
             .options(OpenAiChatOptions.builder()
                 .build())
-            .stream()
-            .content();
+            .call()
+            .entity(BigDecimal.class);
     }
 
-    public Flux<String> processTableAi(String url, boolean isBig) {
-        String prompt;
-        if (isBig) {
-            prompt = """
-                Выведи значения таблицы в заданном формате:
-                
-                Номер ячейки.  и значение, если ты не уверен или их несколько выведи [значение:уверенность в значении]
-                Если значения нету - ТО выводи null
-                Все значения целочисленые
-                
-                """;
-        } else {
-            prompt = """
-                Выведи значения таблицы в заданном формате:
-                
-                Номер ячейки.  и значение, если ты не уверен или их несколько выведи [значение:уверенность в значении]
-                Если значения нету - ТО выводи null
-                Все значения целочисленые
-                
-                """;
-        }
-        byte[] imageBytes = restTemplate.getForObject(url, byte[].class);
+    public TableBig processTableAiBigTable(String url) {
+
+        String prompt = TABLE_PROCESSING_FORMAT_PROMPT.formatted(TableNamesEnum.TABLE_1.getName());
+        byte[] imageBytes = s3Service.downloadFile(url);
 
         assert imageBytes != null;
         Resource imageResource = new ByteArrayResource(imageBytes);
@@ -80,25 +74,31 @@ public class AiService {
             )
             .options(OpenAiChatOptions.builder()
                 .build())
-            .stream()
-            .content();
+            .call()
+            .entity(TableBig.class);
+
     }
 
-    /*
-    @PostMapping("/chat/json")
-    ArtistInfoVariant chatJsonOutput(@RequestBody MusicQuestion question) {
-        var outputConverter = new BeanOutputConverter<>(ArtistInfoVariant.class);
-        var userPromptTemplate = new PromptTemplate("""
-                Tell me the name of one musician famous for playing the {instrument} in a {genre} band.
-                """);
-        Map<String,Object> model = Map.of("instrument", question.instrument(), "genre", question.genre());
-        var prompt = userPromptTemplate.create(model, OpenAiChatOptions.builder()
-            .model(OpenAiApi.ChatModel.GPT_4_O.getValue())
-            .responseFormat(new ResponseFormat(ResponseFormat.Type.JSON_SCHEMA, outputConverter.getJsonSchema()))
-            .build());
+    public TableSmall processTableAiSmall(String url, TableNamesEnum tableName) {
+        if ((tableName == TableNamesEnum.TABLE_1) || (tableName == TableNamesEnum.LAST_NUMBER_TABLE)) {
+            throw new IllegalArgumentException("Неправильно название МАЛЕНЬКИХ таблиц");
+        }
+        String prompt = TABLE_PROCESSING_FORMAT_PROMPT.formatted(tableName.getName());
+        byte[] imageBytes = s3Service.downloadFile(url);
 
-        var chatResponse = chatModel.call(prompt);
-        return outputConverter.convert(chatResponse.getResult().getOutput().getText());
+        assert imageBytes != null;
+        Resource imageResource = new ByteArrayResource(imageBytes);
+
+        return openAiChatClient.prompt()
+            .user(userSpec -> userSpec
+                .text(prompt)
+                .media(new Media(MimeTypeUtils.IMAGE_PNG, imageResource))
+            )
+            .options(OpenAiChatOptions.builder()
+                .build())
+            .call()
+            .entity(TableSmall.class);
+
     }
-    */
+
 }

@@ -34,7 +34,9 @@ CREATE TABLE IF NOT EXISTS document (
     table_5_2_result JSONB,
 
     employee_number_url VARCHAR,
-    employee_number_result JSONB,
+    employee_number_result numeric,
 
-    is_fully_processed BOOLEAN default false
+    is_fully_processed BOOLEAN default false,
+
+    is_split BOOLEAN default false
 );

@@ -47,4 +47,18 @@ public class S3Config {
             )
             .build();
     }
+
+    @Bean(name = "minioS3Presigner")
+    public S3Presigner minioS3Presigner() {
+        return S3Presigner.builder()
+            .region(properties.getRegion())
+            .endpointOverride(URI.create(properties.getS3Endpoint()))
+            .serviceConfiguration(S3Configuration.builder()
+                .pathStyleAccessEnabled(true) // 🔥 CRITICAL FIX
+                .build())
+            .credentialsProvider(
+                StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(properties.getAccessKey(), properties.getSecretKey())))
+            .build();
+    }
 }
