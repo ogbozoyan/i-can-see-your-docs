@@ -1,35 +1,20 @@
-import './App.css'
-import {uploadAndStream} from "./api/Document.js";
-import {useState} from "react";
-import UploadedFileItem from "./components/UploadedFileItem.jsx";
+import "./App.css";
 
-function App() {
-    const [uploads, setUploads] = useState([]);
-    const [uploading, setUploading] = useState(false);
+import { Route, Routes } from "react-router-dom";
+import { MainPage } from "./pages/MainPage/index.jsx";
+import { ErrorPage } from "./pages/Error/index.jsx";
+import { DownloadPage } from "./pages/Download/index.jsx";
+import { DocumentPage } from "./pages/Document/index.jsx";
 
-    function handleFileChange(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+const App = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<MainPage />} />
+      <Route path="/loading" element={<DownloadPage />} />
+      <Route path="/document/:id" element={<DocumentPage />} />
+      <Route path="*" element={<ErrorPage />} />
+    </Routes>
+  );
+};
 
-        setUploading(true);
-        setUploads([]);
-
-        uploadAndStream(file, (chunk) => {
-            setUploads(prev => [...prev, chunk]);
-        });
-    }
-
-    return (
-        <div className="App">
-            <h2>Upload Document</h2>
-            <input type="file" onChange={handleFileChange} disabled={uploading}/>
-            <div>
-                {uploads.map(({name, url}, index) => (
-                    <UploadedFileItem key={index} name={name} url={url}/>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-export default App
+export default App;
