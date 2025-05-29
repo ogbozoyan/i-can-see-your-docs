@@ -1,51 +1,53 @@
-import { Outlet } from "react-router-dom"
-import styled from "styled-components"
-import { FileUploadButton } from "../../components/FileUploadButton"
-import { Card } from "../../components/Card"
+import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
+import { Card } from "../../components/Card";
+import { Button } from "@mui/material";
 
 export const MainPage = () => {
   const MainWrapper = styled.div`
-        flex-wrap: wrap;
-        min-width: 1440px;
-        min-height: 800px;
-        border: 5px solid rgba(141, 167, 155, 0.61); 
-        border-radius: 25px;
-    `
+    flex-wrap: wrap;
+    max-width: 1440px;
+    min-height: 800px;
+    border: 5px solid rgba(141, 167, 155, 0.61);
+    border-radius: 25px;
+  `;
 
-    const UploadFileButtonWrapper = styled.div`
-        display: flex;
-        justify-self: end;
-        margin-right: 10px;
-        margin-top: 10px;
-    `
+  const UploadFileButtonWrapper = styled.div`
+    display: flex;
+    justify-self: end;
+    margin-right: 10px;
+    margin-top: 10px;
+  `;
 
-    const CardWrapper = styled.div`
-        margin-top: 20px;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 20px;
-        margin-left: 20px;
-    `
+  const CardWrapper = styled.div`
+    margin: 40px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+  `;
 
-    return (
+  const navigate = useNavigate();
 
-        <MainWrapper>
-            <UploadFileButtonWrapper>
-                <FileUploadButton />
-            </UploadFileButtonWrapper>
-            <CardWrapper>
-                <Card isMainPage={true}/>
-                <Card/>
-                <Card/>
-                <Card/>
-                <Card/>
-                <Card/>
-                <Card/>
-                <Card/>
-                <Card/>
-                <Card/>
+  const handleRouteToDownloadPage = () => {
+    navigate("/loading");
+  };
 
-            </CardWrapper>
-        </MainWrapper>
-    )
-}
+  const handleRouteToDocument = (evt) => {
+    navigate(`/document/${evt.clientX}`);
+  };
+
+  return (
+    <MainWrapper>
+      <UploadFileButtonWrapper>
+        <Button onClick={handleRouteToDownloadPage}>Загрузить файл</Button>
+      </UploadFileButtonWrapper>
+      <CardWrapper>
+        <Card isMainPage handleClick={handleRouteToDocument} />
+        <Card isMainPage handleClick={handleRouteToDocument} />
+        <Card isMainPage handleClick={handleRouteToDocument} />
+        <Card isMainPage handleClick={handleRouteToDocument} />
+        <Card isMainPage handleClick={handleRouteToDocument} />
+      </CardWrapper>
+    </MainWrapper>
+  );
+};
