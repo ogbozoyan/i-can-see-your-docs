@@ -84,6 +84,7 @@ export const DocumentPage = () => {
         )}
       </MainCard>
       <CardsWrapper>
+        {/*TODO: refactor */}
         {/* table_1 */}
         <ResultWrapper>
           <CardPhoto

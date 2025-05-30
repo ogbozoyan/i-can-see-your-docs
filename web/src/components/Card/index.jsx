@@ -10,6 +10,8 @@ export const Card = ({
 }) => {
   const [imgSrc, setImgSrc] = useState("");
   console.log(photoLink);
+
+  // TODO: рефактор через стор
   useEffect(() => {
     fetch(photoLink)
       .then((response) => response.text())

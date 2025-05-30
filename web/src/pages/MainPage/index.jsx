@@ -8,7 +8,7 @@ import {
   getDocsFromServer,
   getIsLoading,
 } from "../../store/documentsSlice";
-import { BACKEND_URL } from "../../api/document";
+import { BACKEND_URL } from "../../api/Document";
 import { useDispatch, useSelector } from "react-redux";
 
 export const MainPage = () => {
