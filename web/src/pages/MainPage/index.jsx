@@ -1,12 +1,20 @@
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Card } from "../../components/Card";
-import { Button } from "@mui/material";
+import { Button, CircularProgress } from "@mui/material";
+import { useEffect } from "react";
+import {
+  getDocs,
+  getDocsFromServer,
+  getIsLoading,
+} from "../../store/documentsSlice";
+import { BACKEND_URL } from "../../api/document";
+import { useDispatch, useSelector } from "react-redux";
 
 export const MainPage = () => {
   const MainWrapper = styled.div`
     flex-wrap: wrap;
-    max-width: 1440px;
+    width: 1080px;
     min-height: 800px;
     border: 5px solid rgba(141, 167, 155, 0.61);
     border-radius: 25px;
@@ -26,28 +34,52 @@ export const MainPage = () => {
     gap: 20px;
   `;
 
+  const LoadingWrapper = styled.div`
+    margin: 0 auto;
+  `;
+
   const navigate = useNavigate();
 
   const handleRouteToDownloadPage = () => {
     navigate("/loading");
   };
 
-  const handleRouteToDocument = (evt) => {
-    navigate(`/document/${evt.clientX}`);
+  const handleRouteToDocument = (id) => {
+    navigate(`/document/${id}`);
   };
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getDocsFromServer());
+  }, [dispatch]);
+
+  const documents = useSelector(getDocs);
+  const isLoading = useSelector(getIsLoading);
 
   return (
     <MainWrapper>
       <UploadFileButtonWrapper>
         <Button onClick={handleRouteToDownloadPage}>Загрузить файл</Button>
       </UploadFileButtonWrapper>
-      <CardWrapper>
-        <Card isMainPage handleClick={handleRouteToDocument} />
-        <Card isMainPage handleClick={handleRouteToDocument} />
-        <Card isMainPage handleClick={handleRouteToDocument} />
-        <Card isMainPage handleClick={handleRouteToDocument} />
-        <Card isMainPage handleClick={handleRouteToDocument} />
-      </CardWrapper>
+      {!isLoading ? (
+        <CardWrapper>
+          {documents.map((item, idx) => (
+            <Card
+              key={idx}
+              photoLink={`${BACKEND_URL}/presigned-url/${
+                item.s3Key + item.fileName
+              }`}
+              isMainPage
+              handleClick={() => handleRouteToDocument(item.id)}
+            />
+          ))}
+        </CardWrapper>
+      ) : (
+        <LoadingWrapper>
+          <CircularProgress />
+        </LoadingWrapper>
+      )}
     </MainWrapper>
   );
 };

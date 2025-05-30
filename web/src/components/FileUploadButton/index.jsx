@@ -1,7 +1,8 @@
-import * as React from "react";
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { useState } from "react";
+import { uploadDocument } from "../../api/document";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",
@@ -20,8 +21,23 @@ const StyledButton = styled(Button)`
   height: 60px;
 `;
 
-
 export const FileUploadButton = () => {
+  const handleUploadFile = async (evt) => {
+    const selectedFile = evt.target.files[0];
+
+    if (!selectedFile) {
+      return;
+    }
+
+    const formData = new FormData();
+
+    formData.append("file", selectedFile);
+    console.log(selectedFile);
+
+    const response = uploadDocument(formData);
+    console.log(response);
+  };
+
   return (
     <StyledButton
       component="label"
@@ -31,11 +47,7 @@ export const FileUploadButton = () => {
       startIcon={<CloudUploadIcon />}
     >
       Загрузить файл
-      <VisuallyHiddenInput
-        type="file"
-        onChange={(event) => console.log(event.target.files)}
-        multiple
-      />
+      <VisuallyHiddenInput type="file" onChange={handleUploadFile} multiple />
     </StyledButton>
   );
 };

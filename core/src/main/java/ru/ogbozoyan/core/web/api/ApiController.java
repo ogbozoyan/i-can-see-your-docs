@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,7 @@ import ru.ogbozoyan.core.service.S3Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Tag(name = "API controller")
 @CrossOrigin
 @RestController
@@ -42,6 +44,7 @@ public class ApiController {
     @Operation(description = "1 шаг. Сохранить докмуент и получить uuid + url сохраненного документа")
     @Tag(name = "1 шаг")
     public ResponseEntity<DocumentEntity> documentUploadAndSaveToDB(@RequestParam("file") MultipartFile multipartFile) {
+        log.info("Step 1");
         return ResponseEntity.ok(documentService.uploadDocument(multipartFile));
     }
 
@@ -61,7 +64,6 @@ public class ApiController {
 
     @GetMapping("/presigned-url/{uuid}/{filename}")
     @Operation(description = "Получить пресignedUrl для скачивания файла по uuid и имени файла")
-    @Hidden
     public ResponseEntity<String> getPresignedUrlByUuidAndFilename(@PathVariable UUID uuid,
                                                                    @PathVariable String filename) {
         return ResponseEntity.ok(s3Service.getPresignedUrl(uuid, filename));

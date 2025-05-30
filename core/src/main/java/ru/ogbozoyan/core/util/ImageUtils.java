@@ -27,27 +27,38 @@ public class ImageUtils {
         final int REF_WIDTH = 2550;
         final int REF_HEIGHT = 3300;
 
-        double scaleX = imgWidth / (double) REF_WIDTH;
-        double scaleY = imgHeight / (double) REF_HEIGHT;
+        double scaleX;
+        if (imgWidth < REF_WIDTH) {
+            scaleX = imgWidth / (double) REF_WIDTH;
+        } else {
+            scaleX = REF_WIDTH / (double) imgWidth;
+        }
+
+        double scaleY;
+        if (imgHeight < REF_HEIGHT) {
+            scaleY = (double) imgHeight / (double) REF_HEIGHT;
+        } else {
+            scaleY = (double) REF_HEIGHT / (double) imgHeight;
+        }
 
         Map<String, int[]> regions = new HashMap<>();
-        regions.put("table_1",    scaleRegion(TOP_MARGIN + 535, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1950, scaleX, scaleY));
-        regions.put("table_1_2",  scaleRegion(TOP_MARGIN + 835, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1770, scaleX, scaleY));
-        regions.put("table_2_1",  scaleRegion(TOP_MARGIN + 1125, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1495, scaleX, scaleY));
-        regions.put("table_2_2",  scaleRegion(TOP_MARGIN + 1275, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1310, scaleX, scaleY));
-        regions.put("table_3_1",  scaleRegion(TOP_MARGIN + 1470, LEFT_MARGIN + 50, RIGHT_MARGIN + 262, BOTTOM_MARGIN + 1155, scaleX, scaleY));
-        regions.put("table_3_2",  scaleRegion(TOP_MARGIN + 1632, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 980, scaleX, scaleY));
-        regions.put("table_4_1",  scaleRegion(TOP_MARGIN + 1831, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 805, scaleX, scaleY));
-        regions.put("table_4_2",  scaleRegion(TOP_MARGIN + 1987, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 630, scaleX, scaleY));
-        regions.put("table_5_1",  scaleRegion(TOP_MARGIN + 2173, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 455, scaleX, scaleY));
-        regions.put("table_5_2",  scaleRegion(TOP_MARGIN + 2345, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 280, scaleX, scaleY));
+        regions.put("table_1", scaleRegion(TOP_MARGIN + 535, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1950, scaleX, scaleY));
+        regions.put("table_1_2", scaleRegion(TOP_MARGIN + 835, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1770, scaleX, scaleY));
+        regions.put("table_2_1", scaleRegion(TOP_MARGIN + 1125, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1495, scaleX, scaleY));
+        regions.put("table_2_2", scaleRegion(TOP_MARGIN + 1275, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1310, scaleX, scaleY));
+        regions.put("table_3_1", scaleRegion(TOP_MARGIN + 1470, LEFT_MARGIN + 50, RIGHT_MARGIN + 262, BOTTOM_MARGIN + 1155, scaleX, scaleY));
+        regions.put("table_3_2", scaleRegion(TOP_MARGIN + 1632, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 980, scaleX, scaleY));
+        regions.put("table_4_1", scaleRegion(TOP_MARGIN + 1831, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 805, scaleX, scaleY));
+        regions.put("table_4_2", scaleRegion(TOP_MARGIN + 1987, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 630, scaleX, scaleY));
+        regions.put("table_5_1", scaleRegion(TOP_MARGIN + 2173, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 455, scaleX, scaleY));
+        regions.put("table_5_2", scaleRegion(TOP_MARGIN + 2345, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 280, scaleX, scaleY));
         regions.put("last_number", scaleRegion(TOP_MARGIN + 2555, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 20, scaleX, scaleY));
 
         return regions;
     }
 
     private static int[] scaleRegion(int top, int left, int right, int bottom, double scaleX, double scaleY) {
-        return new int[]{
+        return new int[] {
             (int) (top * scaleY),
             (int) (left * scaleX),
             (int) (right * scaleX),
@@ -101,8 +112,9 @@ public class ImageUtils {
 
     /**
      * Увеличение контраста через RescaleOp (умножение и смещение)
-     * @param image входное изображение
-     * @param scale коэффициент умножения (напр. 1.5f для 150%)
+     *
+     * @param image  входное изображение
+     * @param scale  коэффициент умножения (напр. 1.5f для 150%)
      * @param offset сдвиг яркости (0 — не трогаем)
      */
     public static BufferedImage adjustContrast(BufferedImage image, float scale, float offset) {
