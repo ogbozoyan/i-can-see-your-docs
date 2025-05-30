@@ -34,6 +34,7 @@ export const DownloadPage = () => {
     navigate('/');
   }
 
+  // TODO: дописать и улучшить UI
   return (
     <MainWrapper>
       <BackButton onClick={handleGoBack}>На главную</BackButton>

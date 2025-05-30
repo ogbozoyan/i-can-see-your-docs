@@ -1,8 +1,7 @@
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { useState } from "react";
-import { uploadDocument } from "../../api/document";
+import { uploadDocument } from "../../api/Document";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",

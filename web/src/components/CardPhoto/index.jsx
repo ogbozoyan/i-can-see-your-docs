@@ -17,6 +17,7 @@ export const CardPhoto = ({ photoLink }) => {
 
   const [imgSrc, setImgSrc] = useState("");
 
+  // TODO: рефактор, стор использовать
   useEffect(() => {
     if (!photoLink) return;
     fetch(photoLink)

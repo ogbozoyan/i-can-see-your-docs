@@ -1,12 +1,12 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { getDocuments } from "../api/document";
+import { getDocuments } from "../api/Document";
 
 export const getDocsFromServer = createAsyncThunk(
   "documents/get",
   async () => await getDocuments()
 );
 
-
+// TODO: дописать стор, все запросы делать через стор
 
 
 const initialState = {
