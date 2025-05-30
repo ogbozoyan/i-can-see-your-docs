@@ -164,7 +164,7 @@ public class DocumentService {
         }
 
         ConcurrentHashMap<String, ByteArrayResource> nameAndResourceMap = getSplitFiles(
-            s3Service.getPresignedUrl(documentEntity.getId(), documentEntity.getFileName())
+            documentEntity.getS3Key() + documentEntity.getFileName()
         );
 
         log.info("Received {} files", nameAndResourceMap.size());
@@ -185,7 +185,7 @@ public class DocumentService {
             return alreadySplit(documentEntity);
         }
         ConcurrentHashMap<String, ByteArrayResource> nameAndResourceMap = getSplitFiles(
-            s3Service.getPresignedUrl(documentEntity.getId(), documentEntity.getFileName())
+            documentEntity.getS3Key() + documentEntity.getFileName()
         );
 
         log.info("Received {} files", nameAndResourceMap.size());
@@ -305,10 +305,10 @@ public class DocumentService {
         documentRepository.saveAndFlush(documentEntity);
     }
 
-    //4 Call python backend to split normalises and receive 11 parts
-    private ConcurrentHashMap<String, ByteArrayResource> getSplitFiles(String presignedUrl) {
+    //4 Call split and receive 11 parts
+    private ConcurrentHashMap<String, ByteArrayResource> getSplitFiles(String filePath) {
         try {
-            return desckewService.uploadAndGetFiles(presignedUrl);
+            return desckewService.split(filePath);
         } catch (Exception e) {
             log.error("Could not send file to Desckew service", e);
             throw new DocumentServiceException(e);

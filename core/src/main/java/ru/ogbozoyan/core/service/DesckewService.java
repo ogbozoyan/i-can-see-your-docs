@@ -2,46 +2,46 @@ package ru.ogbozoyan.core.service;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.WebClient;
 import ru.ogbozoyan.core.configuration.exception.DescewException;
+import ru.ogbozoyan.core.util.ImageUtils;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+import javax.imageio.ImageIO;
 
 @Service
 @Slf4j
 public class DesckewService {
 
-    @Autowired
-    @Qualifier("descewWebClient")
-    private WebClient webClient;
+    private final S3Service s3Service;
 
+    public DesckewService(S3Service s3Service) {
+        this.s3Service = s3Service;
+    }
 
-    public ConcurrentHashMap<String, ByteArrayResource> uploadAndGetFiles(String preSignedUrl) {
-        log.info("Sending file to Flask URL: {}", preSignedUrl);
+    public ConcurrentHashMap<String, ByteArrayResource> split(String filePath) {
+        log.info("Splitting file: {}", filePath);
 
-        byte[] zipBytes = webClient.post()
-            .uri("/upload")
-            .contentType(MediaType.MULTIPART_FORM_DATA)
-            .body(BodyInserters.fromMultipartData("url", preSignedUrl))
-            .retrieve()
-            .bodyToMono(byte[].class)
-            .block();
+        try (InputStream inputStream = new ByteArrayInputStream(s3Service.downloadFile(filePath))) {
 
-        if (zipBytes == null) {
-            throw new DescewException("Received null body from Flask");
+            BufferedImage original = ImageIO.read(inputStream);
+
+            BufferedImage enhanced = ImageUtils.adjustContrast(original, 1f, 0f);
+
+            byte[] zipBytes = ImageUtils.parseAndZip(enhanced);
+
+            return extractZipToMap(zipBytes);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
 
-        return extractZipToMap(zipBytes);
     }
 
     @SneakyThrows

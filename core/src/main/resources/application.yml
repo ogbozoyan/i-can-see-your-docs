@@ -133,3 +133,13 @@ management:
   tracing:
     sampling:
       probability: 1.0
+
+--- #logging
+logging:
+  level:
+    org:
+      springframework:
+        ai:
+          chat:
+            client:
+              advisor: TRACE
