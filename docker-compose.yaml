@@ -1,43 +1,78 @@
 version: '3.8'
 
 services:
-  minio:
-    image: minio/minio:latest                                    # init image `minio/minio:latest`
-    container_name: minio                                        #container name 'minio'
-    restart: unless-stopped                                              #Specify the restart policy after the container exits to always restart, but do not consider containers that have been stopped when the Docker daemon is started.
-    environment: # set env,Equivalent to -e in the docker run command
-      TZ: Europe/Moscow
-      LANG: en_US.UTF-8
-      MINIO_PROMETHEUS_AUTH_TYPE: "public"
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
-    command: server /data  --console-address ":9001"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-    ports: #mapping port
-      - "9000:9000" # file upload&preview port
-      - "9001:9001" # console access port
-  database:
-    image: 'pgvector/pgvector:pg17'
-    container_name: pgvector-ocr-uni
-    restart: always
+  postgres:
+    image: postgres:15
+    container_name: core-postgres
+    restart: unless-stopped
     environment:
-      - 'POSTGRES_DB=ocr'
-      - 'POSTGRES_PASSWORD=admin'
-      - 'POSTGRES_USER=admin'
-    labels:
-      - "org.springframework.boot.service-connection=postgres"
+      POSTGRES_USER: #
+      POSTGRES_PASSWORD: #
+      POSTGRES_DB: coredb
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
-      - pgvector-data:/var/lib/postgresql/data
-    networks:
-      - ocr
-networks:
-  ocr:
-    driver: bridge
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: ./core
+      dockerfile: Dockerfile
+    container_name: core-app
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/coredb
+      SPRING_DATASOURCE_USERNAME: #
+      SPRING_DATASOURCE_PASSWORD: #
+      AWS_S3-ENDPOINT: #
+      SPRING_AI_OPENAI_API-KEY: #
+
+    depends_on:
+      - postgres
 
 volumes:
-  pgvector-data:
+  postgres_data:
+
+#services:
+#  minio:
+#    image: minio/minio:latest                                    # init image `minio/minio:latest`
+#    container_name: minio                                        #container name 'minio'
+#    restart: unless-stopped                                              #Specify the restart policy after the container exits to always restart, but do not consider containers that have been stopped when the Docker daemon is started.
+#    environment: # set env,Equivalent to -e in the docker run command
+#      TZ: Europe/Moscow
+#      LANG: en_US.UTF-8
+#      MINIO_PROMETHEUS_AUTH_TYPE: "public"
+#      MINIO_ROOT_USER: minioadmin
+#      MINIO_ROOT_PASSWORD: minioadmin
+#    command: server /data  --console-address ":9001"
+#    logging:
+#      driver: "json-file"
+#      options:
+#        max-size: "100m"
+#    ports: #mapping port
+#      - "9000:9000" # file upload&preview port
+#      - "9001:9001" # console access port
+#  database:
+#    image: 'pgvector/pgvector:pg17'
+#    container_name: pgvector-ocr-uni
+#    restart: always
+#    environment:
+#      - 'POSTGRES_DB=ocr'
+#      - 'POSTGRES_PASSWORD=admin'
+#      - 'POSTGRES_USER=admin'
+#    labels:
+#      - "org.springframework.boot.service-connection=postgres"
+#    ports:
+#      - '5432:5432'
+#    volumes:
+#      - pgvector-data:/var/lib/postgresql/data
+#    networks:
+#      - ocr
+#networks:
+#  ocr:
+#    driver: bridge
+#
+#volumes:
+#  pgvector-data:
