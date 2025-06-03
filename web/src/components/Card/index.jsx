@@ -6,7 +6,6 @@ export const Card = ({
   isMainPage,
   photoLink,
   handleClick,
-  idx,
 }) => {
   const [imgSrc, setImgSrc] = useState("");
   console.log(photoLink);
