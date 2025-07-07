@@ -2,7 +2,22 @@ import { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const isDev = import.meta.env.VITE_DEVELOPMENT;
-export const Card = ({ data = [], isMainPage, photoLink, handleClick }) => {
+export const Card = ({
+  data = [],
+  isMainPage,
+  photoLink,
+  handleClick,
+  idx,
+}) => {
+  const [imgSrc, setImgSrc] = useState("");
+  console.log(photoLink);
+
+  // TODO: рефактор через стор
+  useEffect(() => {
+    fetch(photoLink)
+      .then((response) => response.text())
+      .then((text) => setImgSrc(text));
+  }, [photoLink]);
   const CardBody = styled.article`
     position: relative;
     width: 200px;

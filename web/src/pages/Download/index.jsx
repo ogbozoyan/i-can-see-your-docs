@@ -104,6 +104,7 @@ export const DownloadPage = () => {
     const response = uploadDocument(formData);
   };
   // пользователь отредактировал фото и отправил на загрузку
+
   return (
     <MainWrapper>
       <BackButton onClick={handleGoBack}>На главную</BackButton>
