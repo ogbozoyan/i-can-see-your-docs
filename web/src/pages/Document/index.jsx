@@ -7,6 +7,9 @@ import { CardParameters } from "../../components/CardParameters";
 import { useEffect, useState } from "react";
 import { getDocumentByUuid } from "../../api/document";
 import { BACKEND_URL } from "../../api/document";
+import { mockData } from "../../mock/data";
+
+const isDev = import.meta.env.VITE_DEVELOPMENT;
 
 export const DocumentPage = () => {
   const MainWrapper = styled.div`
@@ -49,18 +52,20 @@ export const DocumentPage = () => {
   const [data, setData] = useState();
 
   useEffect(() => {
-    const fetchDocument = async () => {
-      try {
-        const dataDoc = await getDocumentByUuid(id);
-        console.log(dataDoc);
-        setData(dataDoc);
-      } catch (err) {
-        console.error("Ошибка загрузки документа:", err);
-      }
-    };
+    if (!isDev) {
+      const fetchDocument = async () => {
+        try {
+          const dataDoc = await getDocumentByUuid(id);
+          console.log(dataDoc);
+          setData(dataDoc);
+        } catch (err) {
+          console.error("Ошибка загрузки документа:", err);
+        }
+      };
 
-    if (id) {
-      fetchDocument();
+      if (id) {
+        fetchDocument();
+      }
     }
   }, [id]);
 
@@ -68,6 +73,101 @@ export const DocumentPage = () => {
     navigate("/");
   };
 
+  if (isDev) {
+    return (
+      <MainWrapper>
+        <BackButton onClick={handleGoBack}>На главную</BackButton>
+        <MainCard>
+            <Card
+              isMainPage
+              photoLink={`${BACKEND_URL}/presigned-url/`}
+            />
+        </MainCard>
+        <CardsWrapper>
+          {/*TODO: refactor */}
+          {/* table_1 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_1_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+
+          {/* table_1_2 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_1_2_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+
+          {/* table_2_1 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_2_1_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+
+          {/* table_2_2 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_2_2_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+
+          {/* table_3_1 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_3_1_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+
+          {/* table_3_2 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_3_2_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+
+          {/* table_4_1 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_4_1_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+
+          {/* table_4_2 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_4_2_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+
+          {/* table_5_1 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_5_1_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+
+          {/* table_5_2 */}
+          <ResultWrapper>
+            <CardPhoto
+              photoLink={`${BACKEND_URL}/presigned-url/${data?.table_5_2_url}`}
+            />
+            <CardParameters data={mockData} />
+          </ResultWrapper>
+        </CardsWrapper>
+      </MainWrapper>
+    );
+  }
   return (
     <MainWrapper>
       <BackButton onClick={handleGoBack}>На главную</BackButton>
@@ -90,7 +190,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_1_url}`}
           />
-          <CardParameters data={data?.table_1_Result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
 
         {/* table_1_2 */}
@@ -98,7 +198,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_1_2_url}`}
           />
-          <CardParameters data={data?.table_1_2_Result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
 
         {/* table_2_1 */}
@@ -106,7 +206,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_2_1_url}`}
           />
-          <CardParameters data={data?.table_2_1_result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
 
         {/* table_2_2 */}
@@ -114,7 +214,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_2_2_url}`}
           />
-          <CardParameters data={data?.table_2_2_Result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
 
         {/* table_3_1 */}
@@ -122,7 +222,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_3_1_url}`}
           />
-          <CardParameters data={data?.table_3_1_result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
 
         {/* table_3_2 */}
@@ -130,7 +230,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_3_2_url}`}
           />
-          <CardParameters data={data?.table_3_2_result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
 
         {/* table_4_1 */}
@@ -138,7 +238,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_4_1_url}`}
           />
-          <CardParameters data={data?.table_4_1_result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
 
         {/* table_4_2 */}
@@ -146,7 +246,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_4_2_url}`}
           />
-          <CardParameters data={data?.table_4_2_result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
 
         {/* table_5_1 */}
@@ -154,7 +254,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_5_1_url}`}
           />
-          <CardParameters data={data?.table_5_1_result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
 
         {/* table_5_2 */}
@@ -162,7 +262,7 @@ export const DocumentPage = () => {
           <CardPhoto
             photoLink={`${BACKEND_URL}/presigned-url/${data?.table_5_2_url}`}
           />
-          <CardParameters data={data?.table_5_2_result} />
+          <CardParameters data={mockData} />
         </ResultWrapper>
       </CardsWrapper>
     </MainWrapper>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
+const isDev = import.meta.env.VITE_DEVELOPMENT;
 export const Card = ({
   data = [],
   isMainPage,
@@ -23,6 +24,10 @@ export const Card = ({
     height: 250px;
     border: 2px solid #778899;
     border-radius: 10px;
+
+    &:hover {
+      cursor: pointer;
+    }
   `;
 
   const StyledRegenerateButton = styled.button`
@@ -37,6 +42,16 @@ export const Card = ({
     object-fit: cover;
   `;
 
+  const [imgSrc, setImgSrc] = useState("");
+  console.log(photoLink);
+
+  useEffect(() => {
+    if (!isDev) {
+      fetch(photoLink)
+        .then((response) => response.text())
+        .then((text) => setImgSrc(text));
+    }
+  }, [photoLink]);
   if (data.length) {
     return (
       <CardBody onClick={handleClick}>

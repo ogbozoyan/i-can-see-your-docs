@@ -10,6 +10,9 @@ import {
 } from "../../store/documentsSlice";
 import { BACKEND_URL } from "../../api/Document";
 import { useDispatch, useSelector } from "react-redux";
+import mockPhoto from "../../mock/mockPhoto.jpg";
+
+const isDev = import.meta.env.VITE_DEVELOPMENT;
 
 export const MainPage = () => {
   const MainWrapper = styled.div`
@@ -51,14 +54,34 @@ export const MainPage = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    dispatch(getDocsFromServer());
+    if (!isDev) {
+      dispatch(getDocsFromServer());
+    }
   }, [dispatch]);
 
   const documents = useSelector(getDocs);
   const isLoading = useSelector(getIsLoading);
 
+  if (isDev) {
+    return (
+      <MainWrapper>
+        {console.log(isDev)}
+        <UploadFileButtonWrapper>
+          <Button onClick={handleRouteToDownloadPage}>Загрузить файл</Button>
+        </UploadFileButtonWrapper>
+        <CardWrapper>
+          <Card
+            photoLink={"s"}
+            isMainPage
+            handleClick={() => handleRouteToDocument(1)}
+          />
+        </CardWrapper>
+      </MainWrapper>
+    );
+  }
   return (
     <MainWrapper>
+      {console.log(isDev)}
       <UploadFileButtonWrapper>
         <Button onClick={handleRouteToDownloadPage}>Загрузить файл</Button>
       </UploadFileButtonWrapper>

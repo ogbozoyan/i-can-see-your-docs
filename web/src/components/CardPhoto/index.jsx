@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
-
+const isDev = import.meta.env.VITE_DEVELOPMENT;
 export const CardPhoto = ({ photoLink }) => {
   const CardBody = styled.article`
     position: relative;
@@ -19,11 +19,15 @@ export const CardPhoto = ({ photoLink }) => {
 
   // TODO: рефактор, стор использовать
   useEffect(() => {
-    if (!photoLink) return;
-    fetch(photoLink)
-      .then((response) => response.text())
-      .then((text) => setImgSrc(text))
-      .catch((err) => console.error("Ошибка загрузки изображения:", err));
+    if (isDev) {
+      setImgSrc(photoLink);
+    } else {
+      if (!photoLink) return;
+      fetch(photoLink)
+        .then((response) => response.text())
+        .then((text) => setImgSrc(text))
+        .catch((err) => console.error("Ошибка загрузки изображения:", err));
+    }
   }, [photoLink]);
 
   return (
