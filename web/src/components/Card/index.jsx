@@ -9,6 +9,10 @@ export const Card = ({ data = [], isMainPage, photoLink, handleClick }) => {
     height: 250px;
     border: 2px solid #778899;
     border-radius: 10px;
+
+    &:hover {
+      cursor: pointer;
+    }
   `;
 
   const StyledRegenerateButton = styled.button`
@@ -33,8 +37,6 @@ export const Card = ({ data = [], isMainPage, photoLink, handleClick }) => {
         .then((text) => setImgSrc(text));
     }
   }, [photoLink]);
-
-  console.log(isDev + " in handlepage");
   if (data.length) {
     return (
       <CardBody onClick={handleClick}>

@@ -13,12 +13,39 @@ export const CardParameters = ({ data }) => {
 
   const StyledRegenerateButton = styled.button`
     position: absolute;
-    top: -10px;
-    right: -10px;
+    top: 5px;
+    right: 5px;
     font-size: 10px;
-    padding: 5px 10px
+    padding: 5px 10px;
   `;
 
+  const WrapperAnswerAndProbability = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  `;
+
+  const BadProbability = styled.span`
+    background-color: #e36b6b;
+  `;
+
+  const OkProbability = styled.span`
+    background-color: #afe3aa;
+  `;
+
+  const checkProbability = (value) => {
+    return value > 0.5 ? (
+      <>
+        <OkProbability>Вероятность</OkProbability>:
+        <input placeholder={value} />
+      </>
+    ) : (
+      <>
+        <BadProbability>Вероятность</BadProbability>:
+        <input placeholder={value} />
+      </>
+    );
+  };
   if (!data) return <CardBody>Нет данных</CardBody>;
   if (isDev) {
     return (
@@ -33,10 +60,12 @@ export const CardParameters = ({ data }) => {
             <div key={column}>
               <strong>{column}:</strong>
               {values.map((v, idx) => (
-                <div key={idx}>
-                  Ответ: {v.values[idx].answer}, вероятность:
-                  {v.values[idx].probability}
-                </div>
+                <WrapperAnswerAndProbability key={idx}>
+                  <span>
+                    Ответ: <input placeholder={v.values[idx].answer} />
+                  </span>
+                  <span>{checkProbability(v.values[idx].probability)}</span>
+                </WrapperAnswerAndProbability>
               ))}
             </div>
           ))}
@@ -55,9 +84,12 @@ export const CardParameters = ({ data }) => {
           <div key={column}>
             <strong>{column}:</strong>
             {values.map((v, idx) => (
-              <div key={idx}>
-                Ответ: {v.answer}, вероятность: {v.probability}
-              </div>
+              <WrapperAnswerAndProbability key={idx}>
+                <span>
+                  Ответ: <input placeholder={v.values[idx].answer} />
+                </span>
+                <span>{checkProbability(v.values[idx].probability)}</span>
+              </WrapperAnswerAndProbability>
             ))}
           </div>
         ))}

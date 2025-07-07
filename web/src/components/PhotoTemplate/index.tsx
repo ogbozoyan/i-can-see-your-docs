@@ -2,8 +2,8 @@ import styled from "styled-components";
 
  const ReactPhotoEditorWrapper = styled.div`
     position: absolute;
-    top: -160px;
-    left: 50px;
+    top: -80px;
+    left: -40px;
     z-index: 1000;
     width: 545px;
   `;
