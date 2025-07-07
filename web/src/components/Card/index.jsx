@@ -1,21 +1,8 @@
 import { useEffect, useState } from "react";
 import styled from "styled-components";
 
-export const Card = ({
-  data = [],
-  isMainPage,
-  photoLink,
-  handleClick,
-}) => {
-  const [imgSrc, setImgSrc] = useState("");
-  console.log(photoLink);
-
-  // TODO: рефактор через стор
-  useEffect(() => {
-    fetch(photoLink)
-      .then((response) => response.text())
-      .then((text) => setImgSrc(text));
-  }, [photoLink]);
+const isDev = import.meta.env.VITE_DEVELOPMENT;
+export const Card = ({ data = [], isMainPage, photoLink, handleClick }) => {
   const CardBody = styled.article`
     position: relative;
     width: 200px;
@@ -36,6 +23,18 @@ export const Card = ({
     object-fit: cover;
   `;
 
+  const [imgSrc, setImgSrc] = useState("");
+  console.log(photoLink);
+
+  useEffect(() => {
+    if (!isDev) {
+      fetch(photoLink)
+        .then((response) => response.text())
+        .then((text) => setImgSrc(text));
+    }
+  }, [photoLink]);
+
+  console.log(isDev + " in handlepage");
   if (data.length) {
     return (
       <CardBody onClick={handleClick}>
