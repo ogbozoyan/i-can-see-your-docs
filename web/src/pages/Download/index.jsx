@@ -6,6 +6,7 @@ import { useState } from "react";
 import { ReactPhotoEditor } from "react-photo-editor";
 import { PhotoTemplate } from "../../components/PhotoTemplate";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import { uploadDocument } from "../../api/Document";
 
 export const DownloadPage = () => {
   const DownloadPageWrapper = styled.div`
@@ -81,7 +82,6 @@ export const DownloadPage = () => {
   // Save edited image
   const handleSaveImage = (editedFile) => {
     setFile(editedFile);
-    // Do something with the edited file
     console.log(editedFile);
     handleUploadFile();
   };
@@ -101,8 +101,7 @@ export const DownloadPage = () => {
 
     formData.append("file", file);
     console.log(file);
-
-    const response = uploadDocument(formData);
+    uploadDocument(formData);
   };
   // пользователь отредактировал фото и отправил на загрузку
 
