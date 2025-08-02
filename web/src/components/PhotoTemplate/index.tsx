@@ -6,6 +6,7 @@ import styled from "styled-components";
     left: -40px;
     z-index: 1000;
     width: 545px;
+    pointer-events: none;
   `;
 
 export const PhotoTemplate = () => {

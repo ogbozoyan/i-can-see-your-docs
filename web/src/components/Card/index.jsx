@@ -42,7 +42,7 @@ export const Card = ({
     object-fit: cover;
   `;
 
-  const [imgSrc, setImgSrc] = useState("");
+  // const [imgSrc, setImgSrc] = useState("");
   console.log(photoLink);
 
   useEffect(() => {
