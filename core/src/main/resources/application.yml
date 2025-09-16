@@ -43,7 +43,7 @@ spring:
       base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
       chat:
         options:
-          model: llama3.2-vision:11b
+          model: ${OLLAMA_MODEL:llama3.2-vision:11b}
           temperature: 1
     image:
       observations:
