@@ -19,11 +19,7 @@ import ru.ogbozoyan.core.web.api.DocumentEditTableResultReauestDTO;
 import ru.ogbozoyan.core.web.dto.S3CustomResponse;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
@@ -258,7 +254,7 @@ public class DocumentService {
         AtomicReference<BigDecimal> employeeNumber = new AtomicReference<>();
 
         Arrays.stream(TableNamesEnum.values())
-            .parallel()
+            //.parallel()
             .forEach(tableNameEnum -> {
                     switch (tableNameEnum) {
                         case TABLE_1 -> {
@@ -289,7 +285,7 @@ public class DocumentService {
         documentEntity.setTable_1_Result(bigTable);
         documentEntity.setEmployeeNumberResult(employeeNumber);
 
-        for (TableSmall tableSmall : smallTables) {
+        for (TableSmall tableSmall : smallTables.stream().filter(Objects::nonNull).toList()) {
             switch (tableSmall.tableName()) {
                 case TABLE_1_2 -> documentEntity.setTable_1_2_Result(tableSmall);
                 case TABLE_2_1 -> documentEntity.setTable_2_1_result(tableSmall);
@@ -300,6 +296,7 @@ public class DocumentService {
                 case TABLE_4_2 -> documentEntity.setTable_4_2_result(tableSmall);
                 case TABLE_5_1 -> documentEntity.setTable_5_1_result(tableSmall);
                 case TABLE_5_2 -> documentEntity.setTable_5_2_result(tableSmall);
+                default -> {}
             }
         }
         documentRepository.saveAndFlush(documentEntity);
