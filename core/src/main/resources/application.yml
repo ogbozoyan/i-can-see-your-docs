@@ -39,6 +39,12 @@ server:
 --- #spring ai
 spring:
   ai:
+    ollama:
+      base-url: ${OLLAMA_BASE_URL:http://localhost:11434}
+      chat:
+        options:
+          model: ${OLLAMA_MODEL:llama3.2-vision:11b}
+          temperature: 1
     image:
       observations:
         log-prompt: ${AI_IMAGE_OBSERVATIONS_PROMPT_EXPOSE:true}
@@ -46,19 +52,13 @@ spring:
       client:
         observations:
           log-prompt: ${AI_CHAT_CLIENT_OBSERVATIONS_PROMPT_EXPOSE:true}
-    openai:
-      chat:
-        options:
-          model: o4-mini
-          temperature: 1 # only available temperature for o4-mini
-      api-key: ${OPENAI_API_KEY}
 
 --- #spring datasource
 spring:
   datasource:
-    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/ocr}
-    username: ${DATASOURCE_USERNAME:admin}
-    password: ${DATASOURCE_PASSWORD:admin}
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:54324/postgres}
+    username: ${DATASOURCE_USERNAME:postgres}
+    password: ${DATASOURCE_PASSWORD:postgres}
   flyway:
     enabled: true
     locations: classpath:db/migration

@@ -13,8 +13,8 @@ import javax.imageio.ImageIO;
 
 public class ImageUtils {
     private static final int TOP_MARGIN = 235;
-    private static final int LEFT_MARGIN = 350;
-    private static final int RIGHT_MARGIN = 295;
+    private static final int LEFT_MARGIN = 150;
+    private static final int RIGHT_MARGIN = 0;
     private static final int BOTTOM_MARGIN = 355;
 
     public static byte[] parseAndZip(BufferedImage img) throws IOException {
@@ -42,17 +42,17 @@ public class ImageUtils {
         }
 
         Map<String, int[]> regions = new HashMap<>();
-        regions.put("table_1", scaleRegion(TOP_MARGIN + 535, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1950, scaleX, scaleY));
-        regions.put("table_1_2", scaleRegion(TOP_MARGIN + 835, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1770, scaleX, scaleY));
-        regions.put("table_2_1", scaleRegion(TOP_MARGIN + 1125, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1495, scaleX, scaleY));
-        regions.put("table_2_2", scaleRegion(TOP_MARGIN + 1275, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1310, scaleX, scaleY));
-        regions.put("table_3_1", scaleRegion(TOP_MARGIN + 1470, LEFT_MARGIN + 50, RIGHT_MARGIN + 262, BOTTOM_MARGIN + 1155, scaleX, scaleY));
-        regions.put("table_3_2", scaleRegion(TOP_MARGIN + 1632, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 980, scaleX, scaleY));
-        regions.put("table_4_1", scaleRegion(TOP_MARGIN + 1831, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 805, scaleX, scaleY));
-        regions.put("table_4_2", scaleRegion(TOP_MARGIN + 1987, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 630, scaleX, scaleY));
-        regions.put("table_5_1", scaleRegion(TOP_MARGIN + 2173, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 455, scaleX, scaleY));
-        regions.put("table_5_2", scaleRegion(TOP_MARGIN + 2345, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 280, scaleX, scaleY));
-        regions.put("last_number", scaleRegion(TOP_MARGIN + 2555, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 20, scaleX, scaleY));
+        regions.put("table_1", scaleRegion(TOP_MARGIN + 410, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 2000, scaleX, scaleY));
+        regions.put("table_1_2", scaleRegion(TOP_MARGIN + 750, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1814, scaleX, scaleY));
+        regions.put("table_2_1", scaleRegion(TOP_MARGIN + 1110, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1516, scaleX, scaleY));
+        regions.put("table_2_2", scaleRegion(TOP_MARGIN + 1271, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1340, scaleX, scaleY));
+        regions.put("table_3_1", scaleRegion(TOP_MARGIN + 1503, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 1123, scaleX, scaleY));
+        regions.put("table_3_2", scaleRegion(TOP_MARGIN + 1681, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 950, scaleX, scaleY));
+        regions.put("table_4_1", scaleRegion(TOP_MARGIN + 1898, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 736, scaleX, scaleY));
+        regions.put("table_4_2", scaleRegion(TOP_MARGIN + 2065, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 530, scaleX, scaleY));
+        regions.put("table_5_1", scaleRegion(TOP_MARGIN + 2285, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 338, scaleX, scaleY));
+        regions.put("table_5_2", scaleRegion(TOP_MARGIN + 2468, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN + 160, scaleX, scaleY));
+        regions.put("last_number", scaleRegion(TOP_MARGIN + 2720, LEFT_MARGIN, RIGHT_MARGIN, BOTTOM_MARGIN - 100, scaleX, scaleY));
 
         return regions;
     }

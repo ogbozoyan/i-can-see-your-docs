@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.content.Media;
-import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
@@ -22,7 +21,7 @@ import java.math.BigDecimal;
 public class AiService {
 
     @Autowired
-    private ChatClient openAiChatClient;
+    private ChatClient chatClient;
 
     @Autowired
     private S3Service s3Service;
@@ -35,6 +34,7 @@ public class AiService {
         * Если ячейка пустая или значения нет, выводи null.
         
         Формат вывода менять нельзя, он должен быть строго таким, как указано!
+        Верни строго в JSON формате без дополнительного текста.
         """;
 
     public BigDecimal processEmployeeAi(String url) {
@@ -43,20 +43,23 @@ public class AiService {
 
         Resource imageResource = new ByteArrayResource(imageBytes);
 
-        return openAiChatClient.prompt()
-            .user(userSpec -> userSpec
-                .text("""
-                        Тебе необходимо определить номер сотрудника на фотографиию.
-                        Все значения целочисленые
-                        Ни в коем случае не выводи значения в текстовом формате.
-                        Если значения нету - ТО выводи null.
-                    """)
-                .media(new Media(MimeTypeUtils.IMAGE_PNG, imageResource))
-            )
-            .options(OpenAiChatOptions.builder()
-                .build())
-            .call()
-            .entity(BigDecimal.class);
+        try {
+            return chatClient.prompt()
+                    .user(userSpec -> userSpec
+                            .text("""
+                                        Тебе необходимо определить номер сотрудника на фотографиию.
+                                        Все значения целочисленые
+                                        Ни в коем случае не выводи значения в текстовом формате.
+                                        Если значения нету - ТО выводи null.
+                                    """)
+                            .media(new Media(MimeTypeUtils.IMAGE_PNG, imageResource))
+                    )
+                    .call()
+                    .entity(BigDecimal.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return BigDecimal.ZERO;
+        }
     }
 
     public TableBig processTableAiBigTable(String url) {
@@ -67,15 +70,18 @@ public class AiService {
         assert imageBytes != null;
         Resource imageResource = new ByteArrayResource(imageBytes);
 
-        return openAiChatClient.prompt()
-            .user(userSpec -> userSpec
-                .text(prompt)
-                .media(new Media(MimeTypeUtils.IMAGE_PNG, imageResource))
-            )
-            .options(OpenAiChatOptions.builder()
-                .build())
-            .call()
-            .entity(TableBig.class);
+        try {
+            return  chatClient.prompt()
+                    .user(userSpec -> userSpec
+                            .text(prompt)
+                            .media(new Media(MimeTypeUtils.IMAGE_PNG, imageResource))
+                    )
+                    .call()
+                    .entity(TableBig.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
     }
 
@@ -88,16 +94,18 @@ public class AiService {
 
         assert imageBytes != null;
         Resource imageResource = new ByteArrayResource(imageBytes);
-
-        return openAiChatClient.prompt()
-            .user(userSpec -> userSpec
-                .text(prompt)
-                .media(new Media(MimeTypeUtils.IMAGE_PNG, imageResource))
-            )
-            .options(OpenAiChatOptions.builder()
-                .build())
-            .call()
-            .entity(TableSmall.class);
+        try {
+            return chatClient.prompt()
+                    .user(userSpec -> userSpec
+                            .text(prompt)
+                            .media(new Media(MimeTypeUtils.IMAGE_PNG, imageResource))
+                    )
+                    .call()
+                    .entity(TableSmall.class);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
     }
 
