@@ -50,7 +50,6 @@ export const CardParameters = ({ data }) => {
   if (isDev) {
     return (
       <CardBody>
-        <StyledRegenerateButton>Regenerate</StyledRegenerateButton>
         <div>
           <strong>{data.tableName}</strong>
         </div>
@@ -74,7 +73,6 @@ export const CardParameters = ({ data }) => {
   }
   return (
     <CardBody>
-      <StyledRegenerateButton>Regenerate</StyledRegenerateButton>
       <div>
         <strong>{data.tableName}</strong>
       </div>
