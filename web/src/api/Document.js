@@ -1,7 +1,6 @@
 
 
-export const BACKEND_URL = import.meta.env.VITE_API_SWAGGER;
-console.log(BACKEND_URL);
+export const BACKEND_URL = import.meta.env.VITE_API_BACKEND;
 
 export const getDocuments = () =>
   fetch(`${BACKEND_URL}/document`)
