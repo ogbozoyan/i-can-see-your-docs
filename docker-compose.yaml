@@ -14,7 +14,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d coredb" ]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d coredb"]
       interval: 5s
       timeout: 3s
       retries: 10
@@ -39,17 +39,17 @@ services:
       - "9001:9001"
 
   database:
-    image: 'pgvector/pgvector:pg17'
+    image: pgvector/pgvector:pg17
     container_name: pgvector-ocr-uni
     restart: always
     environment:
-      - 'POSTGRES_DB=ocr'
-      - 'POSTGRES_PASSWORD=admin'
-      - 'POSTGRES_USER=admin'
+      - POSTGRES_DB=ocr
+      - POSTGRES_PASSWORD=admin
+      - POSTGRES_USER=admin
     labels:
       - "org.springframework.boot.service-connection=postgres"
     ports:
-      - '5432:5432'
+      - "5432:5432"
     volumes:
       - pgvector-data:/var/lib/postgresql/data
     networks:
@@ -71,10 +71,26 @@ services:
       AWS_S3-ENDPOINT: http://minio:9000/
       OLLAMA_MODEL: llama3.2-vision:11b
       OLLAMA_BASE_URL: http://127.0.0.1:11434
-
     depends_on:
       postgres:
         condition: service_healthy
+
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+      args:
+        VITE_API_BACKEND: "http://localhost:8080/api/v0"
+    container_name: web-frontend
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+    environment:
+      - NODE_ENV=production
+    depends_on:
+      - app
+    networks:
+      - ocr
 
 networks:
   ocr:

@@ -6,7 +6,7 @@ import { useState } from "react";
 import { ReactPhotoEditor } from "react-photo-editor";
 import { PhotoTemplate } from "../../components/PhotoTemplate";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { uploadDocument } from "../../api/Document";
+import { uploadDocument } from "../../api/document.js";
 
 export const DownloadPage = () => {
   const DownloadPageWrapper = styled.div`
