@@ -1,6 +1,10 @@
 
 
-export const BACKEND_URL = import.meta.env.VITE_API_BACKEND;
+export const BACKEND_URL = import.meta.env.VITE_API_SWAGGER;
+
+if (!BACKEND_URL) {
+  console.error('Токена нет');
+}
 
 export const getDocuments = () =>
   fetch(`${BACKEND_URL}/document`)
