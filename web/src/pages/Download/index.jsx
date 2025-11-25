@@ -82,7 +82,6 @@ export const DownloadPage = () => {
   // Save edited image
   const handleSaveImage = (editedFile) => {
     setFile(editedFile);
-    console.log(editedFile);
     handleUploadFile();
   };
 
@@ -100,7 +99,6 @@ export const DownloadPage = () => {
     const formData = new FormData();
 
     formData.append("file", file);
-    console.log(file);
     uploadDocument(formData);
   };
   // пользователь отредактировал фото и отправил на загрузку
