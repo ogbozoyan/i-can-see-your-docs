@@ -1,7 +1,7 @@
 import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { uploadDocument } from "../../api/Document";
+import { uploadDocument } from "../../api/document.js";
 
 const VisuallyHiddenInput = styled("input")({
   clip: "rect(0 0 0 0)",

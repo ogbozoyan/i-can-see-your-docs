@@ -8,7 +8,7 @@ import {
   getDocsFromServer,
   getIsLoading,
 } from "../../store/documentsSlice";
-import { BACKEND_URL } from "../../api/Document";
+import { BACKEND_URL } from "../../api/document.js";
 import { useDispatch, useSelector } from "react-redux";
 import mockPhoto from "../../mock/mockPhoto.jpg";
 

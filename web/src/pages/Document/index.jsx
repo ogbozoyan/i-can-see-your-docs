@@ -5,8 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { CardPhoto } from "../../components/CardPhoto";
 import { CardParameters } from "../../components/CardParameters";
 import { useEffect, useState } from "react";
-import { getDocumentByUuid } from "../../api/document";
-import { BACKEND_URL } from "../../api/document";
+import { getDocumentByUuid } from "../../api/document.js";
+import { BACKEND_URL } from "../../api/document.js";
 import { mockData } from "../../mock/data";
 
 const isDev = import.meta.env.VITE_DEVELOPMENT;
